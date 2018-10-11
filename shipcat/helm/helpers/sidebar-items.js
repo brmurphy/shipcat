@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["diff_format",""],["diff_is_version_only",""],["hexec",""],["hout",""],["infer_fallback_version",""],["infer_version_change","Infer a version change diff and extract old version and new version"],["obfuscate_secrets",""]]});

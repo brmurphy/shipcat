@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["locations","Print the supported locations"],["products","Print supported products in a location"],["regions","Print the supported regions"],["services","Print supported services in a region"]]});

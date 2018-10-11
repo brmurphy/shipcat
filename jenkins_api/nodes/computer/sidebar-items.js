@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Executor","An `Executor` of a `Computer`"],["ExecutorProgress","Progress in an executable"]],"struct":[["CommonComputer","A Jenkins `Computer`"],["ComputerName","Helper type to act on a `Computer`"],["MasterComputer","The master computer"],["SlaveComputer","A slave computer"]],"trait":[["Computer","Trait implemented by specialization of computers"]]});

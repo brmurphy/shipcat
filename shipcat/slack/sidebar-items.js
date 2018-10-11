@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["env_channel",""],["env_hook_url",""],["have_credentials","Basic check to see that slack credentials is working"],["send","Send a `Message` to a configured slack destination"]],"struct":[["Message","Slack message options we support"]]});

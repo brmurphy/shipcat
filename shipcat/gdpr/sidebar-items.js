@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["show","Show GDPR related info for a service"]]});

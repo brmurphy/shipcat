@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["DownWardApiResource",""],["DownwardApiItem",""],["DownwardApiWrapper",""],["ProjectedVolumeSecret",""],["ProjectedVolumeSecretSource",""],["ProjectedVolumeSecretSourceDetail",""],["Volume",""],["VolumeMount",""],["VolumeSecretDetail",""],["VolumeSecretItem",""]]});

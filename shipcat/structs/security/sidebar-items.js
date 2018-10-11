@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["DataFieldType","Canonical names for data fields"]],"struct":[["DataField","Data storage information and encryption information"],["DataHandling","What sensitive data is managed and how"],["DataProcess","Data storage information and encryption information"],["DataStore","Data storage information and encryption information"]]});

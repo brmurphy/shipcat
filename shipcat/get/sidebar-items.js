@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["apistatus",""],["clusterinfo","Entry point for clusterinfo"],["codeowners",""],["images",""],["resources",""],["totalresources",""],["versions",""]],"struct":[["ResourceBreakdown",""]]});

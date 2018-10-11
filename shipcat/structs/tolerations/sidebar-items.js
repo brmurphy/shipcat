@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Effect","Effect of a toleration"],["Operator","Operator for a toleraton"]],"struct":[["Tolerations","Kubernetes Tolerations parameters for a service"]]});

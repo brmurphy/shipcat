@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Mode","Describe how Jenkins allocates jobs to agents"]],"struct":[["Home","Index of Jenkins, with details about the master, a list of `Job` and a list of `View`"]]});

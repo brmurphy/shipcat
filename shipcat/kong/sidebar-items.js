@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["KongOutputMode",""]],"fn":[["config_url","Return the config_url for the given region"],["kongfig_reconcile",""],["output","Generate Kong config from a filled in global config"],["reconcile",""]]});

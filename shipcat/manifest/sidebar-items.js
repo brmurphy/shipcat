@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["filebacked","File backing"],["manifest","Main module"],["math","Computational helpers"],["reducers","Reducers used by shipcat get"],["template","A renderer of `tera` templates (jinja style)"]]});
