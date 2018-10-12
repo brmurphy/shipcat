@@ -102,6 +102,7 @@ ALIASES['serde_json'] = {};
 ALIASES['serde_urlencoded'] = {};
 ALIASES['serde_yaml'] = {};
 ALIASES['shipcat'] = {};
+ALIASES['shipcat'] = {};
 ALIASES['siphasher'] = {};
 ALIASES['slab'] = {};
 ALIASES['slack_hook'] = {};

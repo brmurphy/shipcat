@@ -226,6 +226,9 @@
 <span id="226">226</span>
 <span id="227">227</span>
 <span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><pre class="rust ">
 <span class="comment">// This file describes how manifests and environment manifest overrides are merged.</span>
 
@@ -249,7 +252,7 @@
 
             <span class="comment">// Kong has implicit, region-scoped values</span>
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">kong</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">kong</span> {
-                <span class="ident">kong</span>.<span class="ident">implicits</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">reg</span>.<span class="ident">clone</span>());
+                <span class="ident">kong</span>.<span class="ident">implicits</span>(<span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">reg</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">hosts</span>.<span class="ident">clone</span>());
             }
 
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">kafka</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">kafka</span> {
@@ -412,6 +415,9 @@
         <span class="comment">// vectors are replaced if they are non-empty in override</span>
         <span class="kw">if</span> <span class="op">!</span><span class="ident">mf</span>.<span class="ident">command</span>.<span class="ident">is_empty</span>() {
             <span class="self">self</span>.<span class="ident">command</span> <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">command</span>;
+        }
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">mf</span>.<span class="ident">hosts</span>.<span class="ident">is_empty</span>() {
+            <span class="self">self</span>.<span class="ident">hosts</span> <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">hosts</span>;
         }
         <span class="kw">if</span> <span class="op">!</span><span class="ident">mf</span>.<span class="ident">hostAliases</span>.<span class="ident">is_empty</span>() {
             <span class="self">self</span>.<span class="ident">hostAliases</span> <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">hostAliases</span>;
