@@ -488,6 +488,7 @@
 <span id="488">488</span>
 <span id="489">489</span>
 <span id="490">490</span>
+<span id="491">491</span>
 </pre><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -768,6 +769,7 @@
     <span class="kw">pub</span> <span class="ident">clusters</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Cluster</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Context aliases, e.g. prod-uk-green -&gt; prod-uk</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">contextAliases</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Region definitions</span>

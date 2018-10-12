@@ -124,6 +124,8 @@
 <span id="124">124</span>
 <span id="125">125</span>
 <span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">traits</span>::<span class="ident">Verify</span>;
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="prelude-ty">Result</span>};
@@ -143,6 +145,8 @@
     <span class="kw">pub</span> <span class="ident">unauthenticated</span>: <span class="ident">bool</span>,
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Not::not&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">internal</span>: <span class="ident">bool</span>,
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Not::not&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">publiclyAccessible</span>: <span class="ident">bool</span>,
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Not::not&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">cookie_auth</span>: <span class="ident">bool</span>,
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Not::not&quot;</span>)]</span>

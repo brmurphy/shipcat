@@ -89,12 +89,6 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
-<span id="92">92</span>
-<span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
-<span id="97">97</span>
 </pre><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
@@ -112,9 +106,6 @@
 
 <span class="kw">mod</span> <span class="ident">worker</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">worker</span>::<span class="ident">Worker</span>;
-
-<span class="kw">mod</span> <span class="ident">jaeger</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">jaeger</span>::<span class="ident">Jaeger</span>;
 
 <span class="doccomment">/// Kong configs</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">kong</span>;
@@ -165,9 +156,6 @@
 
 <span class="kw">mod</span> <span class="ident">metadata</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">metadata</span>::{<span class="ident">Metadata</span>, <span class="ident">Contact</span>};
-
-<span class="doccomment">/// Prometheus structs</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prometheus</span>;
 
 
 <span class="doccomment">/// Security related structs</span>
