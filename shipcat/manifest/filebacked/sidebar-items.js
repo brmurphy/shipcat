@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["show","Entry point for service show [service]"]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["apistatus",""],["clusterinfo","Entry point for clusterinfo"],["codeowners",""],["images",""],["resources",""],["totalresources",""],["versions",""]],"struct":[["ResourceBreakdown",""]]});
+initSidebarItems({"fn":[["apistatus",""],["clusterinfo","Entry point for clusterinfo"],["codeowners",""],["images",""],["resources","Resource use for a single region"],["totalresources","Resources for all regions"],["versions",""]]});

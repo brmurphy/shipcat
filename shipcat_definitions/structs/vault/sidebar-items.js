@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["_IMPL_DESERIALIZE_FOR_VaultOpts",""],["_IMPL_SERIALIZE_FOR_VaultOpts",""]],"struct":[["VaultOpts",""]]});

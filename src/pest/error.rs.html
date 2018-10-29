@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/pest-2.0.1/src/error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/pest-2.0.2/src/error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -672,6 +672,23 @@
 <span id="672">672</span>
 <span id="673">673</span>
 <span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
 </pre><pre class="rust ">
 <span class="comment">// pest. The Elegant Parser</span>
 <span class="comment">// Copyright (c) 2018 Dragoș Tiselice</span>
@@ -700,11 +717,11 @@
     <span class="kw">pub</span> <span class="ident">variant</span>: <span class="ident">ErrorVariant</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Location within the input string</span>
     <span class="kw">pub</span> <span class="ident">location</span>: <span class="ident">InputLocation</span>,
+    <span class="doccomment">/// Line/column within the input string</span>
+    <span class="kw">pub</span> <span class="ident">line_col</span>: <span class="ident">LineColLocation</span>,
     <span class="ident">path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">line</span>: <span class="ident">String</span>,
     <span class="ident">continued_line</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">start</span>: (<span class="ident">usize</span>, <span class="ident">usize</span>),
-    <span class="ident">end</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>
 }
 
 <span class="doccomment">/// Different kinds of parsing errors.</span>
@@ -731,6 +748,15 @@
     <span class="ident">Pos</span>(<span class="ident">usize</span>),
     <span class="doccomment">/// `Error` was created by `Error::new_from_span`</span>
     <span class="ident">Span</span>((<span class="ident">usize</span>, <span class="ident">usize</span>))
+}
+
+<span class="doccomment">/// Line/column where an `Error` has occurred.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">LineColLocation</span> {
+    <span class="doccomment">/// Line/column pair if `Error` was created by `Error::new_from_pos`</span>
+    <span class="ident">Pos</span>((<span class="ident">usize</span>, <span class="ident">usize</span>)),
+    <span class="doccomment">/// Line/column pairs if `Error` was created by `Error::new_from_span`</span>
+    <span class="ident">Span</span>((<span class="ident">usize</span>, <span class="ident">usize</span>), (<span class="ident">usize</span>, <span class="ident">usize</span>))
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">RuleType</span><span class="op">&gt;</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
@@ -760,6 +786,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// println!(&quot;{}&quot;, error);</span>
     <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(<span class="ident">needless_pass_by_value</span>))]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_from_pos</span>(<span class="ident">variant</span>: <span class="ident">ErrorVariant</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">pos</span>: <span class="ident">Position</span>) <span class="op">-&gt;</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
         <span class="ident">Error</span> {
             <span class="ident">variant</span>,
@@ -767,8 +794,7 @@
             <span class="ident">path</span>: <span class="prelude-val">None</span>,
             <span class="ident">line</span>: <span class="ident">pos</span>.<span class="ident">line_of</span>().<span class="ident">to_owned</span>(),
             <span class="ident">continued_line</span>: <span class="prelude-val">None</span>,
-            <span class="ident">start</span>: <span class="ident">pos</span>.<span class="ident">line_col</span>(),
-            <span class="ident">end</span>: <span class="prelude-val">None</span>
+            <span class="ident">line_col</span>: <span class="ident">LineColLocation</span>::<span class="ident">Pos</span>(<span class="ident">pos</span>.<span class="ident">line_col</span>())
         }
     }
 
@@ -800,6 +826,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// println!(&quot;{}&quot;, error);</span>
     <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(<span class="ident">needless_pass_by_value</span>))]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_from_span</span>(<span class="ident">variant</span>: <span class="ident">ErrorVariant</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">span</span>: <span class="ident">Span</span>) <span class="op">-&gt;</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">continued_line</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">span</span>.<span class="ident">start_pos</span>().<span class="ident">line_col</span>().<span class="number">0</span> <span class="op">!=</span> <span class="ident">span</span>.<span class="ident">end_pos</span>().<span class="ident">line_col</span>().<span class="number">0</span> {
             <span class="prelude-val">Some</span>(<span class="ident">span</span>.<span class="ident">end_pos</span>().<span class="ident">line_of</span>().<span class="ident">to_owned</span>())
@@ -813,8 +840,7 @@
             <span class="ident">path</span>: <span class="prelude-val">None</span>,
             <span class="ident">line</span>: <span class="ident">span</span>.<span class="ident">start_pos</span>().<span class="ident">line_of</span>().<span class="ident">to_owned</span>(),
             <span class="ident">continued_line</span>,
-            <span class="ident">start</span>: <span class="ident">span</span>.<span class="ident">start_pos</span>().<span class="ident">line_col</span>(),
-            <span class="ident">end</span>: <span class="prelude-val">Some</span>(<span class="ident">span</span>.<span class="ident">end_pos</span>().<span class="ident">line_col</span>())
+            <span class="ident">line_col</span>: <span class="ident">LineColLocation</span>::<span class="ident">Span</span>(<span class="ident">span</span>.<span class="ident">start_pos</span>().<span class="ident">line_col</span>(), <span class="ident">span</span>.<span class="ident">end_pos</span>().<span class="ident">line_col</span>())
         }
     }
 
@@ -903,11 +929,17 @@
         <span class="self">self</span>
     }
 
+    <span class="kw">fn</span> <span class="ident">start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> (<span class="ident">usize</span>, <span class="ident">usize</span>) {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">line_col</span> {
+            <span class="ident">LineColLocation</span>::<span class="ident">Pos</span>(<span class="ident">line_col</span>) <span class="op">=&gt;</span> <span class="ident">line_col</span>,
+            <span class="ident">LineColLocation</span>::<span class="ident">Span</span>(<span class="ident">start_line_col</span>, <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">start_line_col</span>
+        }
+    }
+
     <span class="kw">fn</span> <span class="ident">spacing</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">line</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">end</span> {
-            <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="self">self</span>.<span class="ident">start</span>.<span class="number">0</span>, <span class="ident">line</span>)
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">start</span>.<span class="number">0</span>
+        <span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">line_col</span> {
+            <span class="ident">LineColLocation</span>::<span class="ident">Pos</span>((<span class="ident">line</span>, <span class="kw">_</span>)) <span class="op">=&gt;</span> <span class="ident">line</span>,
+            <span class="ident">LineColLocation</span>::<span class="ident">Span</span>((<span class="ident">start_line</span>, <span class="kw">_</span>), (<span class="ident">end_line</span>, <span class="kw">_</span>)) <span class="op">=&gt;</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">start_line</span>, <span class="ident">end_line</span>)
         };
 
         <span class="kw">let</span> <span class="ident">line_str_len</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">line</span>).<span class="ident">len</span>();
@@ -923,18 +955,19 @@
     <span class="kw">fn</span> <span class="ident">underline</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">underline</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">1</span>;
-        <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">end</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">end</span> {
-            <span class="kw">let</span> <span class="ident">inverted_cols</span> <span class="op">=</span> <span class="ident">start</span> <span class="op">&gt;</span> <span class="ident">end</span>;
-            <span class="kw">if</span> <span class="ident">inverted_cols</span> {
-                <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">start</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">end</span>);
-                <span class="ident">start</span> <span class="op">-=</span> <span class="number">1</span>;
-                <span class="ident">end</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">line_col</span> {
+            <span class="ident">LineColLocation</span>::<span class="ident">Span</span>(<span class="kw">_</span>, (<span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">end</span>)) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">inverted_cols</span> <span class="op">=</span> <span class="ident">start</span> <span class="op">&gt;</span> <span class="ident">end</span>;
+                <span class="kw">if</span> <span class="ident">inverted_cols</span> {
+                    <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">start</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">end</span>);
+                    <span class="ident">start</span> <span class="op">-=</span> <span class="number">1</span>;
+                    <span class="ident">end</span> <span class="op">+=</span> <span class="number">1</span>;
+                }
 
-            <span class="prelude-val">Some</span>(<span class="ident">end</span>)
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
+                <span class="prelude-val">Some</span>(<span class="ident">end</span>)
+            }
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>
         };
         <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">start</span> <span class="op">-</span> <span class="number">1</span>;
 
@@ -1010,8 +1043,9 @@
         <span class="kw">let</span> <span class="ident">spacing</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">spacing</span>();
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">path</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">path</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}:&quot;</span>, <span class="ident">path</span>)).<span class="ident">unwrap_or_default</span>();
 
-        <span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">end</span>), <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">continued_line</span>)) <span class="op">=</span> (<span class="self">self</span>.<span class="ident">end</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">continued_line</span>) {
-            <span class="kw">let</span> <span class="ident">has_line_gap</span> <span class="op">=</span> <span class="ident">end</span>.<span class="number">0</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">0</span> <span class="op">&gt;</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">pair</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">line_col</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">continued_line</span>);
+        <span class="kw">if</span> <span class="kw">let</span> (<span class="ident">LineColLocation</span>::<span class="ident">Span</span>(<span class="kw">_</span>, <span class="ident">end</span>), <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">continued_line</span>)) <span class="op">=</span> <span class="ident">pair</span> {
+            <span class="kw">let</span> <span class="ident">has_line_gap</span> <span class="op">=</span> <span class="ident">end</span>.<span class="number">0</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">0</span> <span class="op">&gt;</span> <span class="number">1</span>;
             <span class="kw">if</span> <span class="ident">has_line_gap</span> {
                 <span class="macro">format</span><span class="macro">!</span>(
                     <span class="string">&quot;{s    }--&gt; {p}{ls}:{c}\n\
@@ -1025,9 +1059,9 @@
                     <span class="ident">s</span> <span class="op">=</span> <span class="ident">spacing</span>,
                     <span class="ident">w</span> <span class="op">=</span> <span class="ident">spacing</span>.<span class="ident">len</span>(),
                     <span class="ident">p</span> <span class="op">=</span> <span class="ident">path</span>,
-                    <span class="ident">ls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">0</span>,
+                    <span class="ident">ls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">0</span>,
                     <span class="ident">le</span> <span class="op">=</span> <span class="ident">end</span>.<span class="number">0</span>,
-                    <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">1</span>,
+                    <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">1</span>,
                     <span class="ident">line</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">line</span>,
                     <span class="ident">continued_line</span> <span class="op">=</span> <span class="ident">continued_line</span>,
                     <span class="ident">underline</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">underline</span>(),
@@ -1045,9 +1079,9 @@
                     <span class="ident">s</span> <span class="op">=</span> <span class="ident">spacing</span>,
                     <span class="ident">w</span> <span class="op">=</span> <span class="ident">spacing</span>.<span class="ident">len</span>(),
                     <span class="ident">p</span> <span class="op">=</span> <span class="ident">path</span>,
-                    <span class="ident">ls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">0</span>,
+                    <span class="ident">ls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">0</span>,
                     <span class="ident">le</span> <span class="op">=</span> <span class="ident">end</span>.<span class="number">0</span>,
-                    <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">1</span>,
+                    <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">1</span>,
                     <span class="ident">line</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">line</span>,
                     <span class="ident">continued_line</span> <span class="op">=</span> <span class="ident">continued_line</span>,
                     <span class="ident">underline</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">underline</span>(),
@@ -1064,8 +1098,8 @@
                  {s} = {message}&quot;</span>,
                 <span class="ident">s</span> <span class="op">=</span> <span class="ident">spacing</span>,
                 <span class="ident">p</span> <span class="op">=</span> <span class="ident">path</span>,
-                <span class="ident">l</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">0</span>,
-                <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>.<span class="number">1</span>,
+                <span class="ident">l</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">0</span>,
+                <span class="ident">c</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>().<span class="number">1</span>,
                 <span class="ident">line</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">line</span>,
                 <span class="ident">underline</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">underline</span>(),
                 <span class="ident">message</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">message</span>()

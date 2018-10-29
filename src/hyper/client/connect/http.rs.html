@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.12.11/src/client/connect/http.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>http.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.12.13/src/client/connect/http.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>http.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -696,6 +696,55 @@
 <span id="696">696</span>
 <span id="697">697</span>
 <span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
+<span id="704">704</span>
+<span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
+<span id="709">709</span>
+<span id="710">710</span>
+<span id="711">711</span>
+<span id="712">712</span>
+<span id="713">713</span>
+<span id="714">714</span>
+<span id="715">715</span>
+<span id="716">716</span>
+<span id="717">717</span>
+<span id="718">718</span>
+<span id="719">719</span>
+<span id="720">720</span>
+<span id="721">721</span>
+<span id="722">722</span>
+<span id="723">723</span>
+<span id="724">724</span>
+<span id="725">725</span>
+<span id="726">726</span>
+<span id="727">727</span>
+<span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
@@ -703,36 +752,68 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::{<span class="ident">IpAddr</span>, <span class="ident">SocketAddr</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">Instant</span>};
 
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">Async</span>, <span class="ident">Future</span>, <span class="ident">Poll</span>};
-<span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">future</span>::{<span class="ident">Executor</span>, <span class="ident">ExecuteError</span>};
-<span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">sync</span>::<span class="ident">oneshot</span>;
-<span class="kw">use</span> <span class="ident">futures_cpupool</span>::{<span class="ident">Builder</span> <span class="kw">as</span> <span class="ident">CpuPoolBuilder</span>};
+<span class="kw">use</span> <span class="ident">futures</span>::<span class="ident">future</span>::{<span class="ident">Executor</span>};
 <span class="kw">use</span> <span class="ident">http</span>::<span class="ident">uri</span>::<span class="ident">Scheme</span>;
 <span class="kw">use</span> <span class="ident">net2</span>::<span class="ident">TcpBuilder</span>;
 <span class="kw">use</span> <span class="ident">tokio_reactor</span>::<span class="ident">Handle</span>;
 <span class="kw">use</span> <span class="ident">tokio_tcp</span>::{<span class="ident">TcpStream</span>, <span class="ident">ConnectFuture</span>};
 <span class="kw">use</span> <span class="ident">tokio_timer</span>::<span class="ident">Delay</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">dns</span>, <span class="ident">Connect</span>, <span class="ident">Connected</span>, <span class="ident">Destination</span>};
-
-<span class="kw">use</span> <span class="self">self</span>::<span class="ident">sealed</span>::<span class="ident">HttpConnectorBlockingTask</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Connect</span>, <span class="ident">Connected</span>, <span class="ident">Destination</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">dns</span>::{<span class="self">self</span>, <span class="ident">GaiResolver</span>, <span class="ident">Resolve</span>, <span class="ident">TokioThreadpoolGaiResolver</span>};
 
 <span class="doccomment">/// A connector for the `http` scheme.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Performs DNS resolution in a thread pool, and then connects over TCP.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Note</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Sets the [`HttpInfo`](HttpInfo) value on responses, which includes</span>
+<span class="doccomment">/// transport information such as the remote socket address used.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HttpConnector</span> {
-    <span class="ident">executor</span>: <span class="ident">HttpConnectExecutor</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HttpConnector</span><span class="op">&lt;</span><span class="ident">R</span> <span class="op">=</span> <span class="ident">GaiResolver</span><span class="op">&gt;</span> {
     <span class="ident">enforce_http</span>: <span class="ident">bool</span>,
     <span class="ident">handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>,
-    <span class="ident">keep_alive_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
-    <span class="ident">nodelay</span>: <span class="ident">bool</span>,
-    <span class="ident">local_address</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span>,
     <span class="ident">happy_eyeballs_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
+    <span class="ident">keep_alive_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
+    <span class="ident">local_address</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span>,
+    <span class="ident">nodelay</span>: <span class="ident">bool</span>,
+    <span class="ident">resolver</span>: <span class="ident">R</span>,
     <span class="ident">reuse_address</span>: <span class="ident">bool</span>,
+}
+
+<span class="doccomment">/// Extra information about the transport when an HttpConnector is used.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Example</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust</span>
+<span class="doccomment">/// use hyper::client::{Client, connect::HttpInfo};</span>
+<span class="doccomment">/// use hyper::rt::Future;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let client = Client::new();</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let fut = client.get(&quot;http://example.local&quot;.parse().unwrap())</span>
+<span class="doccomment">///     .inspect(|resp| {</span>
+<span class="doccomment">///         resp</span>
+<span class="doccomment">///             .extensions()</span>
+<span class="doccomment">///             .get::&lt;HttpInfo&gt;()</span>
+<span class="doccomment">///             .map(|info| {</span>
+<span class="doccomment">///                 println!(&quot;remote addr = {}&quot;, info.remote_addr());</span>
+<span class="doccomment">///             });</span>
+<span class="doccomment">///     });</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Note</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// If a different connector is used besides [`HttpConnector`](HttpConnector),</span>
+<span class="doccomment">/// this value will not exist in the extensions. Consult that specific</span>
+<span class="doccomment">/// connector to see what &quot;extra&quot; information it might provide to responses.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HttpInfo</span> {
+    <span class="ident">remote_addr</span>: <span class="ident">SocketAddr</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">HttpConnector</span> {
@@ -741,36 +822,54 @@
     <span class="doccomment">/// Takes number of DNS worker threads.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">threads</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnector</span> {
-        <span class="ident">HttpConnector</span>::<span class="ident">new_with_handle_opt</span>(<span class="ident">threads</span>, <span class="prelude-val">None</span>)
+        <span class="ident">HttpConnector</span>::<span class="ident">new_with_resolver</span>(<span class="ident">GaiResolver</span>::<span class="ident">new</span>(<span class="ident">threads</span>))
     }
 
-    <span class="doccomment">/// Construct a new HttpConnector with a specific Tokio handle.</span>
+    <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+    <span class="attribute">#[<span class="ident">deprecated</span>(<span class="ident">note</span> <span class="op">=</span> <span class="string">&quot;Use HttpConnector::set_reactor to set a reactor handle&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_handle</span>(<span class="ident">threads</span>: <span class="ident">usize</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnector</span> {
-        <span class="ident">HttpConnector</span>::<span class="ident">new_with_handle_opt</span>(<span class="ident">threads</span>, <span class="prelude-val">Some</span>(<span class="ident">handle</span>))
-    }
-
-    <span class="kw">fn</span> <span class="ident">new_with_handle_opt</span>(<span class="ident">threads</span>: <span class="ident">usize</span>, <span class="ident">handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnector</span> {
-        <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">CpuPoolBuilder</span>::<span class="ident">new</span>()
-            .<span class="ident">name_prefix</span>(<span class="string">&quot;hyper-dns&quot;</span>)
-            .<span class="ident">pool_size</span>(<span class="ident">threads</span>)
-            .<span class="ident">create</span>();
-        <span class="ident">HttpConnector</span>::<span class="ident">new_with_executor</span>(<span class="ident">pool</span>, <span class="ident">handle</span>)
+        <span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">GaiResolver</span>::<span class="ident">new</span>(<span class="ident">threads</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">http</span> <span class="op">=</span> <span class="ident">HttpConnector</span>::<span class="ident">new_with_resolver</span>(<span class="ident">resolver</span>);
+        <span class="ident">http</span>.<span class="ident">set_reactor</span>(<span class="prelude-val">Some</span>(<span class="ident">handle</span>));
+        <span class="ident">http</span>
     }
 
     <span class="doccomment">/// Construct a new HttpConnector.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Takes an executor to run blocking tasks on.</span>
+    <span class="doccomment">/// Takes an executor to run blocking `getaddrinfo` tasks on.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_executor</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">executor</span>: <span class="ident">E</span>, <span class="ident">handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnector</span>
-        <span class="kw">where</span> <span class="ident">E</span>: <span class="ident">Executor</span><span class="op">&lt;</span><span class="ident">HttpConnectorBlockingTask</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>
+        <span class="kw">where</span> <span class="ident">E</span>: <span class="ident">Executor</span><span class="op">&lt;</span><span class="ident">dns</span>::<span class="ident">sealed</span>::<span class="ident">GaiTask</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>
     {
+        <span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">GaiResolver</span>::<span class="ident">new_with_executor</span>(<span class="ident">executor</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">http</span> <span class="op">=</span> <span class="ident">HttpConnector</span>::<span class="ident">new_with_resolver</span>(<span class="ident">resolver</span>);
+        <span class="ident">http</span>.<span class="ident">set_reactor</span>(<span class="ident">handle</span>);
+        <span class="ident">http</span>
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">HttpConnector</span><span class="op">&lt;</span><span class="ident">TokioThreadpoolGaiResolver</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Construct a new HttpConnector using the `TokioThreadpoolGaiResolver`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This resolver **requires** the threadpool runtime to be used.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_tokio_threadpool_resolver</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpConnector</span>::<span class="ident">new_with_resolver</span>(<span class="ident">TokioThreadpoolGaiResolver</span>::<span class="ident">new</span>())
+    }
+}
+
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">HttpConnector</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Construct a new HttpConnector.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Takes a `Resolve` to handle DNS lookups.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_resolver</span>(<span class="ident">resolver</span>: <span class="ident">R</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnector</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
         <span class="ident">HttpConnector</span> {
-            <span class="ident">executor</span>: <span class="ident">HttpConnectExecutor</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">executor</span>)),
             <span class="ident">enforce_http</span>: <span class="bool-val">true</span>,
-            <span class="ident">handle</span>,
-            <span class="ident">keep_alive_timeout</span>: <span class="prelude-val">None</span>,
-            <span class="ident">nodelay</span>: <span class="bool-val">false</span>,
-            <span class="ident">local_address</span>: <span class="prelude-val">None</span>,
+            <span class="ident">handle</span>: <span class="prelude-val">None</span>,
             <span class="ident">happy_eyeballs_timeout</span>: <span class="prelude-val">Some</span>(<span class="ident">Duration</span>::<span class="ident">from_millis</span>(<span class="number">300</span>)),
+            <span class="ident">keep_alive_timeout</span>: <span class="prelude-val">None</span>,
+            <span class="ident">local_address</span>: <span class="prelude-val">None</span>,
+            <span class="ident">nodelay</span>: <span class="bool-val">false</span>,
+            <span class="ident">resolver</span>,
             <span class="ident">reuse_address</span>: <span class="bool-val">false</span>,
         }
     }
@@ -781,6 +880,14 @@
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enforce_http</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">is_enforced</span>: <span class="ident">bool</span>) {
         <span class="self">self</span>.<span class="ident">enforce_http</span> <span class="op">=</span> <span class="ident">is_enforced</span>;
+    }
+
+    <span class="doccomment">/// Set a handle to a `Reactor` to register connections to.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If `None`, the implicit default reactor will be used.</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_reactor</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">handle</span> <span class="op">=</span> <span class="ident">handle</span>;
     }
 
     <span class="doccomment">/// Set that all sockets have `SO_KEEPALIVE` set with the supplied duration.</span>
@@ -838,17 +945,22 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">HttpConnector</span> {
+<span class="comment">// R: Debug required for now to allow adding it to debug output later...</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">fmt</span>::<span class="ident">Debug</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">HttpConnector</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;HttpConnector&quot;</span>)
             .<span class="ident">finish</span>()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Connect</span> <span class="kw">for</span> <span class="ident">HttpConnector</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">Connect</span> <span class="kw">for</span> <span class="ident">HttpConnector</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Resolve</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+    <span class="ident">R</span>::<span class="ident">Future</span>: <span class="ident">Send</span>,
+{
     <span class="kw">type</span> <span class="ident">Transport</span> <span class="op">=</span> <span class="ident">TcpStream</span>;
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">Error</span>;
-    <span class="kw">type</span> <span class="ident">Future</span> <span class="op">=</span> <span class="ident">HttpConnecting</span>;
+    <span class="kw">type</span> <span class="ident">Future</span> <span class="op">=</span> <span class="ident">HttpConnecting</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">connect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dst</span>: <span class="ident">Destination</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Future</span> {
         <span class="macro">trace</span><span class="macro">!</span>(
@@ -876,23 +988,32 @@
         };
 
         <span class="ident">HttpConnecting</span> {
-            <span class="ident">state</span>: <span class="ident">State</span>::<span class="ident">Lazy</span>(<span class="self">self</span>.<span class="ident">executor</span>.<span class="ident">clone</span>(), <span class="ident">host</span>.<span class="ident">into</span>(), <span class="ident">port</span>, <span class="self">self</span>.<span class="ident">local_address</span>),
+            <span class="ident">state</span>: <span class="ident">State</span>::<span class="ident">Lazy</span>(<span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">clone</span>(), <span class="ident">host</span>.<span class="ident">into</span>(), <span class="self">self</span>.<span class="ident">local_address</span>),
             <span class="ident">handle</span>: <span class="self">self</span>.<span class="ident">handle</span>.<span class="ident">clone</span>(),
+            <span class="ident">happy_eyeballs_timeout</span>: <span class="self">self</span>.<span class="ident">happy_eyeballs_timeout</span>,
             <span class="ident">keep_alive_timeout</span>: <span class="self">self</span>.<span class="ident">keep_alive_timeout</span>,
             <span class="ident">nodelay</span>: <span class="self">self</span>.<span class="ident">nodelay</span>,
-            <span class="ident">happy_eyeballs_timeout</span>: <span class="self">self</span>.<span class="ident">happy_eyeballs_timeout</span>,
+            <span class="ident">port</span>,
             <span class="ident">reuse_address</span>: <span class="self">self</span>.<span class="ident">reuse_address</span>,
         }
     }
 }
 
+<span class="kw">impl</span> <span class="ident">HttpInfo</span> {
+    <span class="doccomment">/// Get the remote address of the transport used.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remote_addr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">SocketAddr</span> {
+        <span class="self">self</span>.<span class="ident">remote_addr</span>
+    }
+}
+
 <span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">fn</span> <span class="ident">invalid_url</span>(<span class="ident">err</span>: <span class="ident">InvalidUrl</span>, <span class="ident">handle</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnecting</span> {
+<span class="kw">fn</span> <span class="ident">invalid_url</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Resolve</span><span class="op">&gt;</span>(<span class="ident">err</span>: <span class="ident">InvalidUrl</span>, <span class="ident">handle</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">HttpConnecting</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
     <span class="ident">HttpConnecting</span> {
         <span class="ident">state</span>: <span class="ident">State</span>::<span class="ident">Error</span>(<span class="prelude-val">Some</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(<span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">InvalidInput</span>, <span class="ident">err</span>))),
         <span class="ident">handle</span>: <span class="ident">handle</span>.<span class="ident">clone</span>(),
         <span class="ident">keep_alive_timeout</span>: <span class="prelude-val">None</span>,
         <span class="ident">nodelay</span>: <span class="bool-val">false</span>,
+        <span class="ident">port</span>: <span class="number">0</span>,
         <span class="ident">happy_eyeballs_timeout</span>: <span class="prelude-val">None</span>,
         <span class="ident">reuse_address</span>: <span class="bool-val">false</span>,
     }
@@ -922,23 +1043,24 @@
 }
 <span class="doccomment">/// A Future representing work to connect to a URL.</span>
 <span class="attribute">#[<span class="ident">must_use</span> <span class="op">=</span> <span class="string">&quot;futures do nothing unless polled&quot;</span>]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HttpConnecting</span> {
-    <span class="ident">state</span>: <span class="ident">State</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HttpConnecting</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Resolve</span> <span class="op">=</span> <span class="ident">GaiResolver</span><span class="op">&gt;</span> {
+    <span class="ident">state</span>: <span class="ident">State</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
     <span class="ident">handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Handle</span><span class="op">&gt;</span>,
+    <span class="ident">happy_eyeballs_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
     <span class="ident">keep_alive_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
     <span class="ident">nodelay</span>: <span class="ident">bool</span>,
-    <span class="ident">happy_eyeballs_timeout</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Duration</span><span class="op">&gt;</span>,
+    <span class="ident">port</span>: <span class="ident">u16</span>,
     <span class="ident">reuse_address</span>: <span class="ident">bool</span>,
 }
 
-<span class="kw">enum</span> <span class="ident">State</span> {
-    <span class="ident">Lazy</span>(<span class="ident">HttpConnectExecutor</span>, <span class="ident">String</span>, <span class="ident">u16</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span>),
-    <span class="ident">Resolving</span>(<span class="ident">oneshot</span>::<span class="ident">SpawnHandle</span><span class="op">&lt;</span><span class="ident">dns</span>::<span class="ident">IpAddrs</span>, <span class="ident">io</span>::<span class="ident">Error</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span>),
+<span class="kw">enum</span> <span class="ident">State</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Resolve</span><span class="op">&gt;</span> {
+    <span class="ident">Lazy</span>(<span class="ident">R</span>, <span class="ident">String</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span>),
+    <span class="ident">Resolving</span>(<span class="ident">R</span>::<span class="ident">Future</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">IpAddr</span><span class="op">&gt;</span>),
     <span class="ident">Connecting</span>(<span class="ident">ConnectingTcp</span>),
     <span class="ident">Error</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="ident">Error</span><span class="op">&gt;</span>),
 }
 
-<span class="kw">impl</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">HttpConnecting</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Resolve</span><span class="op">&gt;</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">HttpConnecting</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> (<span class="ident">TcpStream</span>, <span class="ident">Connected</span>);
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">Error</span>;
 
@@ -946,22 +1068,26 @@
         <span class="kw">loop</span> {
             <span class="kw">let</span> <span class="ident">state</span>;
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-                <span class="ident">State</span>::<span class="ident">Lazy</span>(<span class="kw-2">ref</span> <span class="ident">executor</span>, <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">host</span>, <span class="ident">port</span>, <span class="ident">local_addr</span>) <span class="op">=&gt;</span> {
+                <span class="ident">State</span>::<span class="ident">Lazy</span>(<span class="kw-2">ref</span> <span class="ident">resolver</span>, <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">host</span>, <span class="ident">local_addr</span>) <span class="op">=&gt;</span> {
                     <span class="comment">// If the host is already an IP addr (v4 or v6),</span>
                     <span class="comment">// skip resolving the dns and start connecting right away.</span>
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">addrs</span>) <span class="op">=</span> <span class="ident">dns</span>::<span class="ident">IpAddrs</span>::<span class="ident">try_parse</span>(<span class="ident">host</span>, <span class="ident">port</span>) {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">addrs</span>) <span class="op">=</span> <span class="ident">dns</span>::<span class="ident">IpAddrs</span>::<span class="ident">try_parse</span>(<span class="ident">host</span>, <span class="self">self</span>.<span class="ident">port</span>) {
                         <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span>::<span class="ident">Connecting</span>(<span class="ident">ConnectingTcp</span>::<span class="ident">new</span>(
                             <span class="ident">local_addr</span>, <span class="ident">addrs</span>, <span class="self">self</span>.<span class="ident">happy_eyeballs_timeout</span>, <span class="self">self</span>.<span class="ident">reuse_address</span>));
                     } <span class="kw">else</span> {
-                        <span class="kw">let</span> <span class="ident">host</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">host</span>, <span class="ident">String</span>::<span class="ident">new</span>());
-                        <span class="kw">let</span> <span class="ident">work</span> <span class="op">=</span> <span class="ident">dns</span>::<span class="ident">Work</span>::<span class="ident">new</span>(<span class="ident">host</span>, <span class="ident">port</span>);
-                        <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span>::<span class="ident">Resolving</span>(<span class="ident">oneshot</span>::<span class="ident">spawn</span>(<span class="ident">work</span>, <span class="ident">executor</span>), <span class="ident">local_addr</span>);
+                        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">dns</span>::<span class="ident">Name</span>::<span class="ident">new</span>(<span class="ident">mem</span>::<span class="ident">replace</span>(<span class="ident">host</span>, <span class="ident">String</span>::<span class="ident">new</span>()));
+                        <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span>::<span class="ident">Resolving</span>(<span class="ident">resolver</span>.<span class="ident">resolve</span>(<span class="ident">name</span>), <span class="ident">local_addr</span>);
                     }
                 },
                 <span class="ident">State</span>::<span class="ident">Resolving</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">future</span>, <span class="ident">local_addr</span>) <span class="op">=&gt;</span> {
                     <span class="kw">match</span> <span class="macro">try</span><span class="macro">!</span>(<span class="ident">future</span>.<span class="ident">poll</span>()) {
                         <span class="ident">Async</span>::<span class="ident">NotReady</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Async</span>::<span class="ident">NotReady</span>),
                         <span class="ident">Async</span>::<span class="ident">Ready</span>(<span class="ident">addrs</span>) <span class="op">=&gt;</span> {
+                            <span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">port</span>;
+                            <span class="kw">let</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">addrs</span>
+                                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">addr</span><span class="op">|</span> <span class="ident">SocketAddr</span>::<span class="ident">new</span>(<span class="ident">addr</span>, <span class="ident">port</span>))
+                                .<span class="ident">collect</span>();
+                            <span class="kw">let</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">dns</span>::<span class="ident">IpAddrs</span>::<span class="ident">new</span>(<span class="ident">addrs</span>);
                             <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span>::<span class="ident">Connecting</span>(<span class="ident">ConnectingTcp</span>::<span class="ident">new</span>(
                                 <span class="ident">local_addr</span>, <span class="ident">addrs</span>, <span class="self">self</span>.<span class="ident">happy_eyeballs_timeout</span>, <span class="self">self</span>.<span class="ident">reuse_address</span>));
                         }
@@ -976,7 +1102,13 @@
 
                     <span class="ident">sock</span>.<span class="ident">set_nodelay</span>(<span class="self">self</span>.<span class="ident">nodelay</span>)<span class="question-mark">?</span>;
 
-                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Async</span>::<span class="ident">Ready</span>((<span class="ident">sock</span>, <span class="ident">Connected</span>::<span class="ident">new</span>())));
+                    <span class="kw">let</span> <span class="ident">extra</span> <span class="op">=</span> <span class="ident">HttpInfo</span> {
+                        <span class="ident">remote_addr</span>: <span class="ident">sock</span>.<span class="ident">peer_addr</span>()<span class="question-mark">?</span>,
+                    };
+                    <span class="kw">let</span> <span class="ident">connected</span> <span class="op">=</span> <span class="ident">Connected</span>::<span class="ident">new</span>()
+                        .<span class="ident">extra</span>(<span class="ident">extra</span>);
+
+                    <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Async</span>::<span class="ident">Ready</span>((<span class="ident">sock</span>, <span class="ident">connected</span>)));
                 },
                 <span class="ident">State</span>::<span class="ident">Error</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">e</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">take</span>().<span class="ident">expect</span>(<span class="string">&quot;polled more than once&quot;</span>)),
             }
@@ -985,7 +1117,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">HttpConnecting</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">Resolve</span> <span class="op">+</span> <span class="ident">fmt</span>::<span class="ident">Debug</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">HttpConnecting</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="ident">f</span>.<span class="ident">pad</span>(<span class="string">&quot;HttpConnecting&quot;</span>)
     }
@@ -1169,40 +1301,6 @@
                 }
             }
         }
-    }
-}
-
-<span class="comment">// Make this Future unnameable outside of this crate.</span>
-<span class="kw">mod</span> <span class="ident">sealed</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="comment">// Blocking task to be executed on a thread pool.</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HttpConnectorBlockingTask</span> {
-        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">work</span>: <span class="ident">oneshot</span>::<span class="ident">Execute</span><span class="op">&lt;</span><span class="ident">dns</span>::<span class="ident">Work</span><span class="op">&gt;</span>
-    }
-
-    <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">HttpConnectorBlockingTask</span> {
-        <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-            <span class="ident">f</span>.<span class="ident">pad</span>(<span class="string">&quot;HttpConnectorBlockingTask&quot;</span>)
-        }
-    }
-
-    <span class="kw">impl</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">HttpConnectorBlockingTask</span> {
-        <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> ();
-        <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-
-        <span class="kw">fn</span> <span class="ident">poll</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
-            <span class="self">self</span>.<span class="ident">work</span>.<span class="ident">poll</span>()
-        }
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">struct</span> <span class="ident">HttpConnectExecutor</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Executor</span><span class="op">&lt;</span><span class="ident">HttpConnectorBlockingTask</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>);
-
-<span class="kw">impl</span> <span class="ident">Executor</span><span class="op">&lt;</span><span class="ident">oneshot</span>::<span class="ident">Execute</span><span class="op">&lt;</span><span class="ident">dns</span>::<span class="ident">Work</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">HttpConnectExecutor</span> {
-    <span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">future</span>: <span class="ident">oneshot</span>::<span class="ident">Execute</span><span class="op">&lt;</span><span class="ident">dns</span>::<span class="ident">Work</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ExecuteError</span><span class="op">&lt;</span><span class="ident">oneshot</span>::<span class="ident">Execute</span><span class="op">&lt;</span><span class="ident">dns</span>::<span class="ident">Work</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">execute</span>(<span class="ident">HttpConnectorBlockingTask</span> { <span class="ident">work</span>: <span class="ident">future</span> })
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">ExecuteError</span>::<span class="ident">new</span>(<span class="ident">err</span>.<span class="ident">kind</span>(), <span class="ident">err</span>.<span class="ident">into_future</span>().<span class="ident">work</span>))
     }
 }
 

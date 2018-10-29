@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["_IMPL_DESERIALIZE_FOR_Port",""],["_IMPL_DESERIALIZE_FOR_PortProtocol",""],["_IMPL_SERIALIZE_FOR_Port",""],["_IMPL_SERIALIZE_FOR_PortProtocol",""]],"enum":[["PortProtocol",""]],"struct":[["Port","Port to open on a container"]]});

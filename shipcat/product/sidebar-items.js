@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["product","main module"]]});

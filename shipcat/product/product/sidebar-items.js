@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["show","Entry point for product show [product] [location]"],["validate","Entry point for product verify [--location location] products..."]],"struct":[["Owner","Product owner"],["Product","Product manifest, serializable from product.yml"],["Service","Service depended on by Product"]]});

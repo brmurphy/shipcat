@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["_IMPL_DESERIALIZE_FOR_AvailabilityPolicy",""],["_IMPL_DESERIALIZE_FOR_RollingUpdate",""],["_IMPL_SERIALIZE_FOR_AvailabilityPolicy",""],["_IMPL_SERIALIZE_FOR_RollingUpdate",""]],"enum":[["AvailabilityPolicy",""]],"struct":[["RollingUpdate","Configuration parameters for Deployment.spec.strategy.rollingUpdate"]]});
