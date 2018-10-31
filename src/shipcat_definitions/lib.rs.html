@@ -113,6 +113,7 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
 </pre><pre class="rust ">
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;1024&quot;</span>]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">renamed_and_removed_lints</span>)]</span>
@@ -209,10 +210,11 @@
 
 <span class="doccomment">/// File backing</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">filebacked</span>;
-<span class="comment">// merge behaviour for file backed manifests</span>
-<span class="kw">mod</span> <span class="ident">merge</span>;
 
 <span class="comment">// TODO: CRD backing</span>
+
+<span class="comment">// Merge behaviour for manifests</span>
+<span class="kw">mod</span> <span class="ident">merge</span>;
 
 <span class="doccomment">/// Computational helpers</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">math</span>;

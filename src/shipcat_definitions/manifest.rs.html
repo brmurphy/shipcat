@@ -909,6 +909,33 @@
 <span id="909">909</span>
 <span id="910">910</span>
 <span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">vault</span>::<span class="ident">Vault</span>;
 <span class="kw">use</span> <span class="ident">config</span>::<span class="ident">VaultConfig</span>;
@@ -935,41 +962,61 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::<span class="ident">Worker</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::<span class="ident">Port</span>;
 
-<span class="doccomment">/// Main manifest, serializable from shipcat.yml</span>
+<span class="doccomment">/// Main manifest, serializable from shipcat.yml or the shipcat CRD.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Manifest</span> {
     <span class="comment">// ------------------------------------------------------------------------</span>
-    <span class="comment">// !! special properties first !!</span>
+    <span class="comment">// Non-mergeable global properties</span>
     <span class="comment">//</span>
-    <span class="comment">// Manifest syntax extras should be added AFTER all these.</span>
-    <span class="comment">// These special properties, that are generally not overrideable, and should be</span>
-    <span class="comment">// marked with `skip_deserializing` serde field attributes.</span>
+    <span class="comment">// A few global properties that cannot be overridden in region override manifests.</span>
+    <span class="comment">// These are often not exposed to kube and marked with `skip_serializing`,</span>
+    <span class="comment">// but more often data that is used internally and assumed global.</span>
     <span class="comment">// ------------------------------------------------------------------------</span>
 
     <span class="doccomment">/// Name of the service</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This must match the folder name in a manifests repository.</span>
+    <span class="doccomment">/// This must match the folder name in a manifests repository, and additionally;</span>
+    <span class="doccomment">/// - length limits imposed by kube dns</span>
+    <span class="doccomment">/// - dash separated, alpha numeric names (for dns readability)</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The main validation regex is: `^[0-9a-z\-]{1,50}$`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```yaml</span>
+    <span class="doccomment">/// name: webapp</span>
+    <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// Region injected into helm chart</span>
+    <span class="doccomment">/// Whether the service should be public</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Exposed from shipcat, but not overrideable.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">region</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// This is a special flag not exposed to the charts at the moment.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```yaml</span>
+    <span class="doccomment">/// publiclyAccessible: true</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">publiclyAccessible</span>: <span class="ident">bool</span>,
 
-    <span class="doccomment">/// Environment injected into the helm chart</span>
+    <span class="doccomment">/// Service is external</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Exposed from shipcat, but not overrideable.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">environment</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// This cancels all validation and marks the manifest as a non-kube reference only.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```yaml</span>
+    <span class="doccomment">/// external: true</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">external</span>: <span class="ident">bool</span>,
 
-    <span class="doccomment">/// Namespace injected in helm chart</span>
+    <span class="doccomment">/// Service is disabled</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Exposed from shipcat, but not overrideable.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">namespace</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// This disallows usage of this service in all regions.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```yaml</span>
+    <span class="doccomment">/// disabled: true</span>
+    <span class="doccomment">/// ```</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">disabled</span>: <span class="ident">bool</span>,
 
     <span class="doccomment">/// Regions to deploy this service to.</span>
     <span class="doccomment">///</span>
@@ -978,41 +1025,12 @@
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
     <span class="kw">pub</span> <span class="ident">regions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Wheter the service should be public</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is a special flag not exposed to the charts at the moment.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">publiclyAccessible</span>: <span class="ident">bool</span>,
-
-    <span class="doccomment">/// Service is disabled</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This disallows usage of this service in all regions.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">disabled</span>: <span class="ident">bool</span>,
-
-    <span class="doccomment">/// Service is external</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This cancels all validation and marks the manifest as a non-kube reference only.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">external</span>: <span class="ident">bool</span>,
-
-    <span class="doccomment">/// Raw secrets from environment variables.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The `env` map fills in secrets in this via the `vault` client.</span>
-    <span class="doccomment">/// `Manifest::secrets` partitions `env` into `env` and `secrets`.</span>
-    <span class="doccomment">/// See `Manifest::env`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an internal property that is exposed as an output only.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;BTreeMap::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">secrets</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
-
-
     <span class="comment">// ------------------------------------------------------------------------</span>
-    <span class="comment">// mergeable properties below</span>
+    <span class="comment">// Regular mergeable properties</span>
     <span class="comment">//</span>
-    <span class="comment">// BEFORE ADDING PROPERTIES READ THIS</span>
-    <span class="comment">// Below are properties that can be merged, above ones that are global</span>
-    <span class="comment">// if you add anything below here, also add it to merge.rs!</span>
+    <span class="comment">// New syntax goes in here!</span>
+    <span class="comment">// All properties in here should be mergeable, so ensure you add merge behaviour.</span>
+    <span class="comment">// Merge behaviour is defined in the merge module.</span>
     <span class="comment">// ------------------------------------------------------------------------</span>
 
 
@@ -1574,6 +1592,42 @@
     <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Vec::is_empty&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">rbac</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Rbac</span><span class="op">&gt;</span>,
+
+    <span class="comment">// ------------------------------------------------------------------------</span>
+    <span class="comment">// Output variables</span>
+    <span class="comment">//</span>
+    <span class="comment">// Properties here cannot be deserialized and are illegal in manifests!</span>
+    <span class="comment">// if you add anything below here, you need to handle behaviour for it.</span>
+    <span class="comment">// These must be marked with `skip_deserializing` serde attributes.</span>
+    <span class="comment">// ------------------------------------------------------------------------</span>
+
+    <span class="doccomment">/// Region injected into helm chart</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Exposed from shipcat, but not overrideable.</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">region</span>: <span class="ident">String</span>,
+
+    <span class="doccomment">/// Environment injected into the helm chart</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Exposed from shipcat, but not overrideable.</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">environment</span>: <span class="ident">String</span>,
+
+    <span class="doccomment">/// Namespace injected in helm chart</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Exposed from shipcat, but not overrideable.</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">namespace</span>: <span class="ident">String</span>,
+
+    <span class="doccomment">/// Raw secrets from environment variables.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The `env` map fills in secrets in this via the `vault` client.</span>
+    <span class="doccomment">/// `Manifest::secrets` partitions `env` into `env` and `secrets`.</span>
+    <span class="doccomment">/// See `Manifest::env`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This is an internal property that is exposed as an output only.</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_deserializing</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;BTreeMap::is_empty&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">secrets</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Manifest</span> {
@@ -1771,10 +1825,10 @@
             <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="string">&quot;IN_VAULT&quot;</span> {
                 <span class="kw">let</span> <span class="ident">vkey</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}/{}&quot;</span>, <span class="ident">pth</span>, <span class="ident">k</span>);
                 <span class="kw-2">*</span><span class="ident">v</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="ident">vkey</span>)<span class="question-mark">?</span>;
-                <span class="comment">// sanity check; secretFiles are assumed base64 verify we can decode</span>
-                <span class="kw">if</span> <span class="ident">base64</span>::<span class="ident">decode</span>(<span class="ident">v</span>).<span class="ident">is_err</span>() {
-                    <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Secret {} in vault is not base64 encoded&quot;</span>, <span class="ident">vkey</span>);
-                }
+            }
+            <span class="comment">// sanity check; secretFiles are assumed base64 verify we can decode</span>
+            <span class="kw">if</span> <span class="ident">base64</span>::<span class="ident">decode</span>(<span class="ident">v</span>).<span class="ident">is_err</span>() {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Secret {} is not base64 encoded&quot;</span>, <span class="ident">k</span>);
             }
         }
         <span class="prelude-val">Ok</span>(())

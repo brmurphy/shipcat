@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["_IMPL_SERIALIZE_FOR_ResourceTotals",""]],"struct":[["ResourceTotals","Total resource usage for a Manifest"]]});
+initSidebarItems({"struct":[["ResourceTotals","Total resource usage for a Manifest"]]});

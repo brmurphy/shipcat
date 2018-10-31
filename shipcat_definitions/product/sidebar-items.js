@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["merge",""],["product","main module"]]});
+initSidebarItems({"mod":[["product","main module"]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["_IMPL_DESERIALIZE_FOR_Kafka",""],["_IMPL_SERIALIZE_FOR_Kafka",""]],"struct":[["Kafka",""]]});
+initSidebarItems({"struct":[["Kafka",""]]});

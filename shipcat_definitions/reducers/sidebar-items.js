@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["_IMPL_SERIALIZE_FOR_ResourceBreakdown",""]],"struct":[["ResourceBreakdown","Complete breakdown of resource usage in total, and split by team."]]});
+initSidebarItems({"struct":[["ResourceBreakdown","Complete breakdown of resource usage in total, and split by team."]]});
