@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["_IMPL_DESERIALIZE_FOR_Dependency",""],["_IMPL_DESERIALIZE_FOR_DependencyProtocol",""],["_IMPL_SERIALIZE_FOR_Dependency",""],["_IMPL_SERIALIZE_FOR_DependencyProtocol",""]],"enum":[["DependencyProtocol","Supported dependency protocols"]],"struct":[["Dependency","Dependency of a service"]]});

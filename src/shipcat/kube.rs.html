@@ -614,7 +614,7 @@
                     <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;No logs for pod {} found&quot;</span>, <span class="ident">pod</span>);
                 } <span class="kw">else</span> {
                     <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Last 30 log lines:&quot;</span>);
-                    <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">l</span>);
+                    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">l</span>);
                 }
             },
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
@@ -635,7 +635,7 @@
         <span class="kw">match</span> <span class="ident">kout</span>(<span class="ident">descvec</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw-2">mut</span> <span class="ident">o</span>) <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span> <span class="ident">o</span>.<span class="ident">find</span>(<span class="string">&quot;Events:\n&quot;</span>) {
-                    <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">o</span>.<span class="ident">split_off</span>(<span class="ident">idx</span>))
+                    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">o</span>.<span class="ident">split_off</span>(<span class="ident">idx</span>))
                 }
                 <span class="kw">else</span> {
                     <span class="comment">// Not printing in this case, tons of secrets in here</span>
