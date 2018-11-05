@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["locations","Print the supported locations"],["products","Print supported products in a location"],["regions","Print the supported regions"],["services","Print supported services in a region"]]});
+initSidebarItems({"fn":[["locations","Print the supported locations"],["regions","Print the supported regions"],["services","Print supported products in a location Print supported services in a region TODO: this one needs to do the guess outside in main!"]]});

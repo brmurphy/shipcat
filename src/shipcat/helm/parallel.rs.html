@@ -135,16 +135,18 @@
 <span id="135">135</span>
 <span id="136">136</span>
 <span id="137">137</span>
+<span id="138">138</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">threadpool</span>::<span class="ident">ThreadPool</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">channel</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>;
 
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="ident">Manifest</span>, <span class="ident">Backend</span>, <span class="ident">Region</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">UpgradeMode</span>, <span class="ident">UpgradeData</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">direct</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">helpers</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">kube</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">ResultExt</span>, <span class="ident">Error</span>, <span class="ident">ErrorKind</span>, <span class="ident">Config</span>, <span class="ident">Manifest</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">Error</span>, <span class="ident">ErrorKind</span>};
 
 
 <span class="doccomment">/// Stable threaded mass helm operation</span>
@@ -154,7 +156,7 @@
 <span class="doccomment">/// The helm operations does --wait for upgrades, but this parallelises the wait</span>
 <span class="doccomment">/// and catches any errors.</span>
 <span class="doccomment">/// All operations run to completion and the first error is returned at end if any.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reconcile</span>(<span class="ident">svcs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">umode</span>: <span class="ident">UpgradeMode</span>, <span class="ident">n_workers</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reconcile</span>(<span class="ident">svcs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>, <span class="ident">umode</span>: <span class="ident">UpgradeMode</span>, <span class="ident">n_workers</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">n_jobs</span> <span class="op">=</span> <span class="ident">svcs</span>.<span class="ident">len</span>();
     <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">n_workers</span>);
     <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Starting {} parallel helm jobs using {} workers&quot;</span>, <span class="ident">n_jobs</span>, <span class="ident">n_workers</span>);
@@ -163,13 +165,14 @@
     <span class="kw">for</span> <span class="ident">mf</span> <span class="kw">in</span> <span class="ident">svcs</span> {
         <span class="comment">// satisfying thread safety</span>
         <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">umode</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">region</span>.<span class="ident">into</span>();
+        <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">region</span>.<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">conf</span>.<span class="ident">clone</span>();
+
 
         <span class="kw">let</span> <span class="ident">tx</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">clone</span>(); <span class="comment">// tx channel reused in each thread</span>
         <span class="ident">pool</span>.<span class="ident">execute</span>(<span class="kw">move</span> <span class="op">||</span> {
             <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Running {} for {}&quot;</span>, <span class="ident">mode</span>, <span class="ident">mf</span>.<span class="ident">name</span>);
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">reconcile_worker</span>(<span class="ident">mf</span>, <span class="ident">mode</span>, <span class="ident">reg</span>, <span class="ident">config</span>);
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">reconcile_worker</span>(<span class="ident">mf</span>, <span class="ident">mode</span>, <span class="ident">config</span>, <span class="ident">reg</span>);
             <span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">res</span>).<span class="ident">expect</span>(<span class="string">&quot;channel will be there waiting for the pool&quot;</span>);
         });
     }
@@ -189,7 +192,7 @@
         <span class="kw">match</span> <span class="ident">e</span> {
             <span class="ident">Error</span>(<span class="ident">ErrorKind</span>::<span class="ident">MissingRollingVersion</span>(<span class="ident">svc</span>),<span class="kw">_</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// This only happens in rolling envs because version is mandatory in other envs</span>
-                <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;&#39;{}&#39; missing version for {} - please add or install&quot;</span>, <span class="ident">svc</span>, <span class="ident">region</span>);
+                <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;&#39;{}&#39; missing version for {} - please add or install&quot;</span>, <span class="ident">svc</span>, <span class="ident">region</span>.<span class="ident">name</span>);
             },
             <span class="comment">// remaining cases not ignorable</span>
             <span class="ident">e</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>),
@@ -203,15 +206,13 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This logs errors and upgrade successes individually.</span>
 <span class="doccomment">/// NB: This can reconcile lock-step upgraded services at the moment.</span>
-<span class="kw">fn</span> <span class="ident">reconcile_worker</span>(<span class="ident">tmpmf</span>: <span class="ident">Manifest</span>, <span class="ident">mode</span>: <span class="ident">UpgradeMode</span>, <span class="ident">region</span>: <span class="ident">String</span>, <span class="ident">conf</span>: <span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UpgradeData</span><span class="op">&gt;&gt;</span> {
+<span class="kw">fn</span> <span class="ident">reconcile_worker</span>(<span class="ident">tmpmf</span>: <span class="ident">Manifest</span>, <span class="ident">mode</span>: <span class="ident">UpgradeMode</span>, <span class="ident">conf</span>: <span class="ident">Config</span>, <span class="ident">region</span>: <span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UpgradeData</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">svc</span> <span class="op">=</span> <span class="ident">tmpmf</span>.<span class="ident">name</span>;
-
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">completed</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>, <span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="ident">regdata</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">conf</span>.<span class="ident">regions</span>[<span class="kw-2">&amp;</span><span class="ident">region</span>];
     <span class="comment">// get version running now (to limit race condition with deploys)</span>
     <span class="comment">// this query also lets us detect if we have to install or simply upgrade</span>
-    <span class="kw">let</span> (<span class="ident">exists</span>, <span class="ident">fallback</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">helpers</span>::<span class="ident">infer_fallback_version</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>, <span class="kw-2">&amp;</span><span class="ident">regdata</span>.<span class="ident">namespace</span>) {
+    <span class="kw">let</span> (<span class="ident">exists</span>, <span class="ident">fallback</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">helpers</span>::<span class="ident">infer_fallback_version</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>, <span class="kw-2">&amp;</span><span class="ident">region</span>.<span class="ident">namespace</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">running_ver</span>) <span class="op">=&gt;</span> (<span class="bool-val">true</span>, <span class="ident">running_ver</span>),
         <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">version</span>.<span class="ident">clone</span>() {
@@ -232,8 +233,9 @@
     <span class="kw">if</span> <span class="ident">mf</span>.<span class="ident">version</span>.<span class="ident">is_none</span>() {
          <span class="ident">mf</span>.<span class="ident">version</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">fallback</span>)
     };
-    <span class="comment">// sanity verify (no-shoehorning in illegal versions etc)</span>
-    <span class="ident">mf</span>.<span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>).<span class="ident">chain_err</span>(<span class="op">||</span> <span class="ident">ErrorKind</span>::<span class="ident">ManifestVerifyFailure</span>(<span class="ident">svc</span>.<span class="ident">clone</span>()))<span class="question-mark">?</span>;
+    <span class="comment">// sanity verify what we changed (no-shoehorning in illegal versions in rolling envs)</span>
+    <span class="ident">region</span>.<span class="ident">versioningScheme</span>.<span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="ident">mf</span>.<span class="ident">version</span>.<span class="ident">clone</span>().<span class="ident">unwrap</span>())<span class="question-mark">?</span>;
+
 
     <span class="comment">// Template values file</span>
     <span class="kw">let</span> <span class="ident">hfile</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}.helm.gen.yml&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">svc</span>);

@@ -434,12 +434,6 @@
 <span id="434">434</span>
 <span id="435">435</span>
 <span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">Manifest</span>};
 <span class="kw">use</span> <span class="ident">regex</span>::<span class="ident">Regex</span>;
@@ -844,27 +838,21 @@
 
 
 <span class="doccomment">/// Port forward a port to localhost</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">port_forward</span>(<span class="ident">mf</span>: <span class="kw-2">&amp;</span><span class="ident">Manifest</span>, <span class="ident">desiredpod</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">port_forward</span>(<span class="ident">mf</span>: <span class="kw-2">&amp;</span><span class="ident">Manifest</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="comment">// TODO: kubectl auth can-i create something?</span>
-    <span class="kw">let</span> <span class="ident">podsres</span> <span class="op">=</span> <span class="ident">get_pods</span>(<span class="kw-2">&amp;</span><span class="ident">mf</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">pods</span> <span class="op">=</span> <span class="ident">podsres</span>.<span class="ident">split</span>(<span class="string">&#39; &#39;</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-    <span class="kw">let</span> <span class="ident">pnr</span> <span class="op">=</span> <span class="ident">desiredpod</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>);
     <span class="kw">let</span> <span class="ident">port</span> <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">httpPort</span>.<span class="ident">unwrap</span>();
     <span class="comment">// first 1024 ports need sudo so avoid that</span>
     <span class="kw">let</span> <span class="ident">localport</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">port</span> <span class="op">&lt;=</span> <span class="number">1024</span> { <span class="number">7777</span> } <span class="kw">else</span> { <span class="ident">port</span> };
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="ident">pods</span>.<span class="ident">get</span>(<span class="ident">pnr</span>) {
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Port forwarding kube pod {} to localhost:{}&quot;</span>, <span class="ident">p</span>, <span class="ident">localport</span>);
-        <span class="comment">//kubectl port-forward $pod localport:httpPort</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pfargs</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;-n={}&quot;</span>, <span class="ident">mf</span>.<span class="ident">namespace</span>),
-            <span class="string">&quot;port-forward&quot;</span>.<span class="ident">into</span>(),
-            <span class="ident">p</span>.<span class="ident">to_string</span>(),
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}:{}&quot;</span>, <span class="ident">port</span>, <span class="ident">port</span>)
-        ];
-        <span class="ident">kexec</span>(<span class="ident">pfargs</span>)<span class="question-mark">?</span>;
-    } <span class="kw">else</span> {
-        <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Pod {} not found for service {}&quot;</span>, <span class="ident">pnr</span>, <span class="kw-2">&amp;</span><span class="ident">mf</span>.<span class="ident">name</span>);
-    }
+
+    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Port forwarding kube deployment {} to localhost:{}&quot;</span>, <span class="ident">mf</span>.<span class="ident">name</span>, <span class="ident">localport</span>);
+    <span class="comment">//kubectl port-forward deployment/${name} localport:httpPort</span>
+    <span class="kw">let</span> <span class="ident">pfargs</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;-n={}&quot;</span>, <span class="ident">mf</span>.<span class="ident">namespace</span>),
+        <span class="string">&quot;port-forward&quot;</span>.<span class="ident">into</span>(),
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;deployment/{}&quot;</span>, <span class="ident">mf</span>.<span class="ident">name</span>),
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}:{}&quot;</span>, <span class="ident">port</span>, <span class="ident">port</span>)
+    ];
+    <span class="ident">kexec</span>(<span class="ident">pfargs</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 

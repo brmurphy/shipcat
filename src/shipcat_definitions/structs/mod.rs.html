@@ -91,16 +91,13 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
 </pre><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
 <span class="doccomment">/// Allow normal error handling from structs</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="prelude-ty">Result</span>;
-<span class="doccomment">/// Verify trait gets the Config</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Config</span>;
+<span class="doccomment">/// Verify trait gets the Region and Team</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Region</span>, <span class="ident">Team</span>};
 <span class="doccomment">/// Verify traits sometimes need to cross reference stuff from other manifests</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Manifest</span>;
 
@@ -173,9 +170,6 @@
 
 <span class="kw">mod</span> <span class="ident">vault</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">vault</span>::<span class="ident">VaultOpts</span>;
-
-<span class="doccomment">/// Traits that the structs can implement</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">traits</span>;
 
 <span class="doccomment">/// Cron Jobs</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cronjob</span>;

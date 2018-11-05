@@ -193,13 +193,9 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">AddAssign</span>, <span class="ident">Mul</span>};
-
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">traits</span>::<span class="ident">Verify</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">Config</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="prelude-ty">Result</span>;
 
 <span class="comment">// Kubernetes resouce structs</span>
 <span class="comment">//</span>
@@ -316,9 +312,9 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Verify</span> <span class="kw">for</span> <span class="ident">Resources</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="comment">// TODO: look at config for limits</span>
-    <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">Resources</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="comment">// TODO: look at config for limits?</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// (We can unwrap all the values as we assume implicit called!)</span>
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">normalised</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">n</span>.<span class="ident">requests</span>;

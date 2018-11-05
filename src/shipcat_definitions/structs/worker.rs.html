@@ -78,13 +78,11 @@
 <span id="78">78</span>
 <span id="79">79</span>
 <span id="80">80</span>
-<span id="81">81</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Resources</span>, <span class="ident">Probe</span>, <span class="ident">Port</span>, <span class="ident">EnvVars</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">autoscaling</span>::<span class="ident">AutoScaling</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">traits</span>::<span class="ident">Verify</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="prelude-ty">Result</span>;
 
 
 <span class="doccomment">/// Worker for a service</span>
@@ -140,21 +138,21 @@
     <span class="kw">pub</span> <span class="ident">livenessProbe</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Probe</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Verify</span> <span class="kw">for</span> <span class="ident">Worker</span> {
-    <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">env</span>.<span class="ident">verify</span>(<span class="ident">conf</span>)<span class="question-mark">?</span>;
+<span class="kw">impl</span> <span class="ident">Worker</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">env</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">hpa</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">autoScaling</span> {
             <span class="ident">hpa</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
         }
         <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ports</span> {
-            <span class="ident">p</span>.<span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>)<span class="question-mark">?</span>;
+            <span class="ident">p</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
         }
-        <span class="self">self</span>.<span class="ident">resources</span>.<span class="ident">verify</span>(<span class="ident">conf</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">resources</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">rp</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">readinessProbe</span> {
-            <span class="ident">rp</span>.<span class="ident">verify</span>(<span class="ident">conf</span>)<span class="question-mark">?</span>;
+            <span class="ident">rp</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
         }
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lp</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">livenessProbe</span> {
-            <span class="ident">lp</span>.<span class="ident">verify</span>(<span class="ident">conf</span>)<span class="question-mark">?</span>;
+            <span class="ident">lp</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
         }
 
         <span class="comment">// maybe the http ports shouldn&#39;t overlap? might not matter.</span>

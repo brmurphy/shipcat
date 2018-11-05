@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Manifest","Main manifest, serializable from shipcat.yml or the shipcat CRD."]]});
+initSidebarItems({"enum":[["ManifestType","Various states a manifest can exist in depending on resolution."]],"struct":[["Manifest","Main manifest, serializable from shipcat.yml or the shipcat CRD."]]});
