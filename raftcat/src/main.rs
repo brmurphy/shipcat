@@ -10,7 +10,6 @@ extern crate semver;
 #[macro_use] extern crate tera;
 extern crate kubernetes;
 extern crate chrono;
-
 extern crate failure;
 use failure::err_msg;
 
@@ -19,6 +18,7 @@ use failure::err_msg;
 extern crate raftcat;
 pub use raftcat::*;
 
+extern crate openssl_probe;
 use kubernetes::client::APIClient;
 use kubernetes::config as config;
 
@@ -317,6 +317,7 @@ fn main() -> Result<()> {
     //env::set_var("RUST_LOG", "actix_web=info,raftcat=debug");
     //env::set_var("RUST_BACKTRACE", "full");
     env_logger::init();
+    openssl_probe::init_ssl_cert_env_vars();
 
     // Load the config: local kube config prioritised first for local development
     // NB: Only supports a config with client certs locally (e.g. kops setup)
