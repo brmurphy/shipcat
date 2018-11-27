@@ -14,6 +14,7 @@ use super::{Result, Error};
 use super::structs::{Contact};
 use states::ConfigType;
 use region::Region;
+use failure::Fail;
 
 // ----------------------------------------------------------------------------------
 
@@ -380,7 +381,7 @@ impl Config {
                         if let Ok(expected) = Version::parse(&caps["version"]) {
                             let res2 = Config::verify_version(&expected);
                             if let Err(e2) = res2 {
-                                return Err(Error::from(e).chain_err(|| e2));
+                                return Err(e.context(e2))?;
                             }
                         }
                     }

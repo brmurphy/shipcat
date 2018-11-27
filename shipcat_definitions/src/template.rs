@@ -2,7 +2,20 @@ use std::collections::HashMap;
 use std::iter;
 
 use tera::{self, Value, Tera, Context};
-use super::{Result, ErrorKind, ResultExt};
+use super::{Result};
+
+use failure::{Fail, ResultExt};
+
+use std::sync::Mutex;
+#[derive(Debug, Fail)]
+#[fail(display = "tera error")]
+pub struct TeraError(Mutex<tera::Error>, String);
+impl TeraError {
+    pub fn new(e: tera::Error, reason: String) -> TeraError {
+        // tera::Error is an error-chain error and must be wrapped
+        TeraError(Mutex::new(e), reason)
+    }
+}
 
 #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
 fn indent(v: Value, m: HashMap<String, Value>) -> tera::Result<Value> {
@@ -56,12 +69,16 @@ fn read_template_file(svc: &str, tmpl: &str) -> Result<String> {
 /// The first takes precendense if it exists.
 pub fn render_file_data(data: String, context: &Context) -> Result<String> {
     let mut tera = Tera::default();
-    tera.add_raw_template("one_off", &data)?;
+    tera.add_raw_template("one_off", &data)
+        .map_err(|e| TeraError::new(e,
+            format!("Failed to add file template {}", data)
+        ))?;;
     tera.autoescape_on(vec!["html"]);
     tera.register_filter("indent", indent);
     tera.register_filter("as_secret", as_secret);
 
-    let result = tera.render("one_off", context)?;
+    let result = tera.render("one_off", context)
+        .map_err(|e| TeraError::new(e, "Failed to render one_off".into()) )?;
     let mut xs = vec![];
     for l in result.lines() {
         // trim whitespace (mostly to satisfy linters)
@@ -73,12 +90,19 @@ pub fn render_file_data(data: String, context: &Context) -> Result<String> {
 /// One off template
 pub fn one_off(tpl: &str, ctx: &Context) -> Result<String> {
     let mut tera = Tera::default();
-    tera.add_raw_template("one_off", tpl)?;
+    tera.add_raw_template("one_off", tpl)
+        .map_err(|e| TeraError::new(e,
+            format!("Failed to add raw template {}", tpl)
+        ))?;;
     tera.register_filter("as_secret", as_secret);
-    let res = tera.render("one_off", ctx)?;
+    let res = tera.render("one_off", ctx)
+        .map_err(|e| TeraError::new(e, "Failed to render one_off".into()) )?;
     Ok(res)
 }
 
+#[derive(Debug, Fail)]
+#[fail(display = "service '{}' has invalid templates", _0)]
+struct InvalidTemplate(String);
 
 // main helpers for the manifest
 use super::{Manifest, Region};
@@ -121,9 +145,7 @@ impl Manifest {
                 if let Some(ref mut v) = f.value {
                     let data : String = v.clone();
                     let svc = self.name.clone();
-                    *v = render_file_data(data, &ctx).chain_err(|| {
-                        ErrorKind::InvalidTemplate(svc)
-                    })?;
+                    *v = render_file_data(data, &ctx).context(InvalidTemplate(svc))?;
                 } else {
                     bail!("configs must be read first - missing {}", f.name); // internal error
                 }

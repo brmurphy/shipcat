@@ -2,31 +2,85 @@ use std::collections::BTreeMap;
 use std::env;
 use std::io::Read;
 
-use super::{Result, ErrorKind, ResultExt, Error};
 use region::{VaultConfig};
 
+// All main errors that can happen from vault
+#[derive(Debug)]
+struct VaultError {
+    inner: Context<VErrKind>,
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+enum VErrKind {
+    #[fail(display = "secret '{}' not have the 'value' key", _0)]
+    InvalidSecretForm(String),
+
+    #[fail(display = "secret '{}' could not be reached or accessed", _0)]
+    SecretNotAccessible(String),
+
+    #[fail(display = "VAULT_ADDR not specified")]
+    MissingAddr,
+
+    #[fail(display = "VAULT_TOKEN not specified")]
+    MissingToken,
+
+    #[fail(display = "Unexpected HTTP status {} from {}", _0, _1)]
+    UnexpectedHttpStatus(reqwest::StatusCode, String),
+
+    #[fail(display = "could not access URL '{}'", _0)]
+    Url(reqwest::Url),
+}
+use failure::{Error, Fail, Context, Backtrace, ResultExt};
+use std::fmt::{self, Display};
+
+// boilerplate error wrapping (might go away)
+impl Fail for VaultError {
+    fn cause(&self) -> Option<&Fail> { self.inner.cause() }
+    fn backtrace(&self) -> Option<&Backtrace> { self.inner.backtrace() }
+}
+impl Display for VaultError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+//impl VaultError {
+//    pub fn kind(&self) -> VErrKind {
+//        *self.inner.get_context()
+//    }
+//}
+impl From<VErrKind> for VaultError {
+    fn from(kind: VErrKind) -> VaultError {
+        VaultError { inner: Context::new(kind) }
+    }
+}
+impl From<Context<VErrKind>> for VaultError {
+    fn from(inner: Context<VErrKind>) -> VaultError {
+        VaultError { inner: inner }
+    }
+}
+type Result<T> = std::result::Result<T, Error>;
+
+// helpers
+
 fn default_addr() -> Result<String> {
-    env::var("VAULT_ADDR").map_err(|_| ErrorKind::MissingVaultAddr.into())
+    Ok(env::var("VAULT_ADDR").context(VErrKind::MissingAddr)?)
 }
 
 #[cfg(feature = "filesystem")]
 fn file_token_fallback() -> Result<String> {
     use std::fs::File;
+    let home = dirs::home_dir();
+    ensure!(home.is_some(), "system must have a home directory");
 
-    // Build a path to ~/.vault-token.
-    let path = dirs::home_dir()
-        .ok_or_else(|| { ErrorKind::NoHomeDirectory })?
-        .join(".vault-token");
-
-    // Read the file.
-    let mut f = File::open(path)?;
+    // Read the `.vault-token` file from $HOME
+    let mut f = File::open(home.unwrap().join(".vault-token"))?;
     let mut token = String::new();
     f.read_to_string(&mut token)?;
     Ok(token)
 }
 
 fn default_token() -> Result<String> {
-    env::var("VAULT_TOKEN")
+    let t = env::var("VAULT_TOKEN")
         .or_else(|_: env::VarError| -> Result<String> {
             if cfg!(feature = "filesystem") {
                 #[cfg(feature = "filesystem")]
@@ -34,7 +88,8 @@ fn default_token() -> Result<String> {
             }
             bail!("no vault file outside shipcat cli")
         })
-        .chain_err(|| ErrorKind::MissingVaultToken)
+        .context(VErrKind::MissingToken)?;
+    Ok(t)
 }
 
 /// Secrets in vault values can be integers or strings
@@ -110,7 +165,7 @@ impl Vault {
 
     /// Initialize using dummy values and return garbage
     pub fn mocked(vc: &VaultConfig) -> Result<Vault> {
-        Vault::new(reqwest::Client::new(), &vc.url, default_token()?, Mode::Mocked)
+        Vault::new(reqwest::Client::new(), &vc.url, "INVALID_TOKEN".to_string(), Mode::Mocked)
     }
 
     fn new<U, S>(client: reqwest::Client, addr: U, token: S, mode: Mode) -> Result<Vault>
@@ -130,18 +185,16 @@ impl Vault {
         let url = self.addr.join(&format!("v1/{}", path))?;
         debug!("GET {}", url);
 
-        let mkerr = || ErrorKind::Url(url.clone());
         let mut res = self.client.get(url.clone())
             .header("X-Vault-Token", self.token.clone())
             .send()
-            .chain_err(&mkerr)?;
+            .context(VErrKind::Url(url.clone()))?;
 
         // Generate informative errors for HTTP failures, because these can
         // be caused by everything from bad URLs to overly restrictive vault policies
         if !res.status().is_success() {
             let status = res.status().to_owned();
-            let err: Error = ErrorKind::UnexpectedHttpStatus(status).into();
-            return Err(err).chain_err(&mkerr);
+            return Err(VErrKind::UnexpectedHttpStatus(status, url.to_string()))?
         }
 
         let mut body = String::new();
@@ -156,18 +209,16 @@ impl Vault {
         let url = self.addr.join(&format!("v1/secret/{}?list=true", path))?;
         debug!("LIST {}", url);
 
-        let mkerr = || ErrorKind::Url(url.clone());
         let mut res = self.client.get(url.clone())
             .header("X-Vault-Token", self.token.clone())
             .send()
-            .chain_err(&mkerr)?;
+            .context(VErrKind::Url(url.clone()))?;
 
         // Generate informative errors for HTTP failures, because these can
         // be caused by everything from bad URLs to overly restrictive vault policies
         if !res.status().is_success() {
             let status = res.status().to_owned();
-            let err: Error = ErrorKind::UnexpectedHttpStatus(status).into();
-            return Err(err).chain_err(&mkerr);
+            return Err(VErrKind::UnexpectedHttpStatus(status, url.to_string()))?
         }
 
         let mut body = String::new();
@@ -192,16 +243,15 @@ impl Vault {
             return Ok("aGVsbG8gd29ybGQ=".into());
         }
 
-        let secret = self.get_secret(&pth).chain_err(|| ErrorKind::SecretNotAccessible(pth.clone()))?;
+        let secret = self.get_secret(&pth).context(VErrKind::SecretNotAccessible(pth.clone()))?;
 
         // NB: Currently assume each path in vault has a single `value`
         // Read the value key (which should exist)
-        secret.data
+        let s = secret.data
             .get("value")
-            .ok_or_else(|| { ErrorKind::InvalidSecretForm(pth).into() })
-            .map(|v| {
-                v.clone().into()
-            })
+            .ok_or_else(|| VErrKind::InvalidSecretForm(pth))
+            .map(ToOwned::to_owned).map(String::from)?;
+        Ok(s)
     }
 }
 

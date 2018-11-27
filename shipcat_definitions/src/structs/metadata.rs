@@ -1,8 +1,10 @@
+use template::TeraError;
 use regex::Regex;
 use std::ops::{Deref, DerefMut};
 
 use super::Result;
 use config::{Team, SlackParameters};
+
 
 /// Contact data
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -113,10 +115,10 @@ impl Metadata {
         use tera::{Tera, Context};
         let mut ctx = Context::new();
         ctx.insert("version", &ver.to_string());
-        let res = Tera::one_off(&self.gitTagTemplate, &ctx, false).map_err(|e| {
-            warn!("Failed to template gitTagTemplate {}", self.gitTagTemplate);
-            e
-        })?;
+        let res = Tera::one_off(&self.gitTagTemplate, &ctx, false)
+            .map_err(|e| TeraError::new(e,
+                format!("Failed to template gitTagTemplate {}", self.gitTagTemplate)
+            ))?;
         Ok(res)
     }
 }

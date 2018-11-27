@@ -1,4 +1,3 @@
-#![recursion_limit = "1024"]
 #![allow(renamed_and_removed_lints)]
 #![allow(non_snake_case)]
 
@@ -27,6 +26,11 @@ extern crate regex;
 extern crate semver;
 extern crate base64;
 
+#[macro_use] extern crate failure;
+
+pub use failure::Error; //Fail
+pub type Result<T> = std::result::Result<T, Error>;
+
 // Mutually exclusive backing on hold atm..
 // currently breaks Default for ConfigType and ManifestType
 //#[macro_use]
@@ -35,64 +39,6 @@ extern crate base64;
 //                any(    feature = "filesystem", feature = "crd")),
 //            "Must exclusively use Filesystem or CRDs as the backing");
 
-#[macro_use]
-extern crate error_chain;
-error_chain! {
-    types {
-        Error, ErrorKind, ResultExt, Result;
-    }
-    links {}
-    foreign_links {
-        Fmt(::std::fmt::Error);
-        Io(::std::io::Error) #[cfg(unix)];
-        Float(::std::num::ParseFloatError);
-        Int(::std::num::ParseIntError);
-        Tmpl(tera::Error);
-        SerdeY(serde_yaml::Error);
-        SerdeJ(serde_json::Error);
-        Reqw(reqwest::UrlError);
-        Reqe(reqwest::Error);
-        Time(::std::time::SystemTimeError);
-    }
-    errors {
-        MissingVaultAddr {
-            description("VAULT_ADDR not specified")
-            display("VAULT_ADDR not specified")
-        }
-        MissingVaultToken {
-            description("VAULT_TOKEN not specified")
-            display("VAULT_TOKEN not specified")
-        }
-        UnexpectedHttpStatus(status: reqwest::StatusCode) {
-            description("unexpected HTTP status")
-            display("unexpected HTTP status: {}", &status)
-        }
-        NoHomeDirectory {
-            description("can't find home directory")
-            display("can't find home directory")
-        }
-        Url(url: reqwest::Url) {
-            description("could not access URL")
-            display("could not access URL '{}'", &url)
-        }
-        InvalidTemplate(svc: String) {
-            description("invalid template")
-            display("service '{}' has invalid templates", svc)
-        }
-        InvalidManifest(svc: String) {
-            description("manifest does not validate")
-            display("manifest for {} does not validate", &svc)
-        }
-        InvalidSecretForm(key: String) {
-            description("secret is of incorrect form")
-            display("secret '{}' not have the 'value' key", &key)
-        }
-        SecretNotAccessible(key: String) {
-            description("secret could not be reached or accessed")
-            display("secret '{}'", &key)
-        }
-    }
-}
 
 /// Config with regional data
 pub mod region;
