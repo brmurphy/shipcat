@@ -7,8 +7,7 @@ use super::{UpgradeMode, UpgradeData};
 use super::direct;
 use super::helpers;
 use super::kube;
-use super::{Result, Error, ErrorKind};
-
+use super::{Result, HErrKind, ResultExt};
 
 /// Stable threaded mass helm operation
 ///
@@ -50,15 +49,22 @@ pub fn reconcile(svcs: Vec<Manifest>, conf: &Config, region: &Region, umode: Upg
 
     // propagate first non-ignorable error if exists
     for e in res {
-        match e {
-            Error(ErrorKind::MissingRollingVersion(svc),_) => {
-                // This only happens in rolling envs because version is mandatory in other envs
-                warn!("'{}' missing version for {} - please add or install", svc, region.name);
-            },
-            // remaining cases not ignorable
-            e => return Err(e),
+        let mut ignored = false;
+        for cause in e.iter_chain() {
+            if let Some(err) = cause.downcast_ref::<HErrKind>() {
+                if let HErrKind::MissingRollingVersion(svc) = err {
+                    // This only happens in rolling envs because version is mandatory in other envs
+                    warn!("'{}' missing version for {} - please add or install", svc, region.name);
+                    ignored = true;
+                }
+            }
+        }
+        // remaining cases not ignorable
+        if !ignored {
+            return Err(e);
         }
     }
+
     Ok(())
 }
 
@@ -84,7 +90,7 @@ fn reconcile_worker(mut mf: Manifest, mode: UpgradeMode, _conf: Config, region: 
                 (false, v)
             } else {
                 warn!("ignoring service {} without version as it is not installed in rolling environment", mf.name);
-                return Err(e.chain_err(|| ErrorKind::MissingRollingVersion(mf.name.clone())));
+                return Err(e).context(HErrKind::MissingRollingVersion(mf.name.clone()))?;
             }
         }
     };
@@ -128,7 +134,7 @@ fn reconcile_worker(mut mf: Manifest, mode: UpgradeMode, _conf: Config, region: 
                         e
                     });
                     // need set this as a reconcile level error
-                    return Err(ErrorKind::UpgradeTimeout(mf.name.clone(), mf.estimate_wait_time()).into());
+                    return Err(HErrKind::UpgradeTimeout(mf.name.clone(), mf.estimate_wait_time()).into());
                 }
             }
         }

@@ -5,7 +5,6 @@ use semver::Version;
 
 use super::helm::helpers;
 use super::structs::Metadata;
-use super::{Result, ErrorKind, ResultExt};
 
 /// Slack message options we support
 ///
@@ -35,11 +34,72 @@ pub struct Message {
     pub version: Option<String>,
 }
 
+// All main errors that can happen from slack
+
+// New failure error type
+#[derive(Debug)]
+struct SError {
+    inner: Context<SErrKind>,
+}
+// its associated enum
+#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+enum SErrKind {
+    #[fail(display = "Failed to send the slack message to '{}'", _0)]
+    SlackSendFailure(String),
+
+    #[fail(display = "Failed to build the slack message")]
+    SlackBuildFailure,
+
+    #[fail(display = "SLACK_SHIPCAT_HOOK_URL not specified")]
+    MissingSlackUrl,
+
+    #[fail(display = "SLACK_SHIPCAT_CHANNEL not specified")]
+    MissingSlackChannel,
+}
+use failure::{Error, Fail, Context, Backtrace, ResultExt};
+use std::fmt::{self, Display};
+
+// boilerplate error wrapping (might go away)
+impl Fail for SError {
+    fn cause(&self) -> Option<&Fail> { self.inner.cause() }
+    fn backtrace(&self) -> Option<&Backtrace> { self.inner.backtrace() }
+}
+impl Display for SError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+impl From<SErrKind> for SError {
+    fn from(kind: SErrKind) -> SError {
+        SError { inner: Context::new(kind) }
+    }
+}
+impl From<Context<SErrKind>> for SError {
+    fn from(inner: Context<SErrKind>) -> SError {
+        SError { inner: inner }
+    }
+}
+type Result<T> = std::result::Result<T, Error>;
+
+// wrapper for error-chain (temporary)
+use std::sync::Mutex;
+#[derive(Debug, Fail)]
+#[fail(display = "slack error")]
+pub struct SlackError(Mutex<slack_hook::Error>);
+impl From<slack_hook::Error> for SlackError {
+    fn from(e: slack_hook::Error) -> Self {
+        // slack_hook error is an error-chain and must be wrapped
+        SlackError(Mutex::new(e))
+    }
+}
+
+// helpers
+
 pub fn env_hook_url() -> Result<String> {
-    env::var("SLACK_SHIPCAT_HOOK_URL").map_err(|_| ErrorKind::MissingSlackUrl.into())
+    Ok(env::var("SLACK_SHIPCAT_HOOK_URL").context(SErrKind::MissingSlackUrl)?)
 }
 pub fn env_channel() -> Result<String> {
-    env::var("SLACK_SHIPCAT_CHANNEL").map_err(|_| ErrorKind::MissingSlackChannel.into())
+    Ok(env::var("SLACK_SHIPCAT_CHANNEL").context(SErrKind::MissingSlackChannel)?)
 }
 fn env_username() -> String {
     env::var("SLACK_SHIPCAT_NAME").unwrap_or_else(|_| "shipcat".into())
@@ -62,7 +122,10 @@ pub fn send(msg: Message) -> Result<()> {
     let hook_user : String = env_username();
 
     // if hook url is invalid, chain it so we know where it came from:
-    let slack = Slack::new(hook_url).chain_err(|| ErrorKind::SlackSendFailure(hook_url.to_string()))?;
+    let slack = Slack::new(hook_url)
+        .map_err(SlackError::from)
+        .context(SErrKind::SlackSendFailure(hook_url.to_string()))?;
+
     let mut p = PayloadBuilder::new().channel(hook_chan)
       .icon_emoji(":ship:")
       .username(hook_user);
@@ -104,7 +167,10 @@ pub fn send(msg: Message) -> Result<()> {
             codeattach = Some(AttachmentBuilder::new(diff.clone())
                 .color("#439FE0")
                 .text(vec![Text(diff.into())].as_slice())
-                .build()?)
+                .build()
+                .map_err(SlackError::from)
+                .context(SErrKind::SlackBuildFailure)?
+            )
         }
     } else if let Some(v) = msg.version {
         if let Some(ref md) = msg.metadata {
@@ -136,7 +202,7 @@ pub fn send(msg: Message) -> Result<()> {
 
     // Pass the texts array to slack_hook
     a = a.text(texts.as_slice());
-    let mut ax = vec![a.build()?];
+    let mut ax = vec![a.build().map_err(SlackError::from).context(SErrKind::SlackBuildFailure)?];
 
     // Second attachment: optional code (blue)
     if let Some(diffattach) = codeattach {
@@ -147,7 +213,8 @@ pub fn send(msg: Message) -> Result<()> {
     p = p.attachments(ax);
 
     // Send everything. Phew.
-    slack.send(&p.build()?).chain_err(|| ErrorKind::SlackSendFailure(hook_url.to_string()))?;
+    slack.send(&p.build().map_err(SlackError::from)?)
+        .map_err(SlackError::from).context(SErrKind::SlackSendFailure(hook_url.to_string()))?;
 
     Ok(())
 }

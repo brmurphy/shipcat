@@ -1,9 +1,10 @@
-use template::TeraError;
+//use template::TeraError;
 use regex::Regex;
 use std::ops::{Deref, DerefMut};
 
 use super::Result;
 use config::{Team, SlackParameters};
+use failure::{SyncFailure, ResultExt};
 
 
 /// Contact data
@@ -116,9 +117,8 @@ impl Metadata {
         let mut ctx = Context::new();
         ctx.insert("version", &ver.to_string());
         let res = Tera::one_off(&self.gitTagTemplate, &ctx, false)
-            .map_err(|e| TeraError::new(e,
-                format!("Failed to template gitTagTemplate {}", self.gitTagTemplate)
-            ))?;
+            .map_err(SyncFailure::new)
+            .context(format_err!("Failed to template gitTagTemplate {}", self.gitTagTemplate))?;
         Ok(res)
     }
 }

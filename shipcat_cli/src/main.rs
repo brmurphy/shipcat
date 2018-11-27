@@ -4,6 +4,7 @@ extern crate clap;
 extern crate log;
 extern crate loggerv;
 extern crate libc;
+//extern crate failure;
 
 extern crate shipcat;
 
@@ -14,6 +15,7 @@ use shipcat::*;
 use clap::{Arg, App, AppSettings, SubCommand, ArgMatches};
 use std::process;
 
+
 fn print_error_debug(e: &Error) {
     use std::env;
     // print causes of error if present
@@ -22,9 +24,15 @@ fn print_error_debug(e: &Error) {
         // only print debug implementation rather than unwinding
         warn!("{:?}", e);
     } else {
-        // normal case - unwind the error chain
-        for e in e.iter().skip(1) {
-            warn!("caused by: {}", e);
+        // normal case - unwind the failure chain
+        for cause in e.iter_chain().skip(1) {
+            //if let Some(err) = cause.downcast_ref::<SyncFailure<tera::Error>>() {
+            //    warn!("caused by {}", err);
+            //} else {
+                // can read cause normally
+                warn!("caused by: {}", cause);
+                warn!("{:?}", cause); // debug for error-chain traces etc
+            //}
         }
     }
 }

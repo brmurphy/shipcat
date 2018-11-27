@@ -11,7 +11,9 @@ use super::slack;
 use super::kube;
 use super::Metadata;
 use super::{Manifest, Config, Region};
-use super::{Result, ResultExt, ErrorKind};
+
+use super::{Result, HErrKind, ResultExt};
+
 use super::helpers::{self, hout, hexec};
 
 /// The different modes we allow `helm upgrade` to run in
@@ -175,7 +177,7 @@ impl UpgradeData {
 
         // version + image MUST be set at this point before calling this for upgrade/install purposes
         // all entry points into this should set mf.version correctly - and call mf.verify
-        let version = mf.version.clone().ok_or_else(|| ErrorKind::ManifestFailure("version".into()))?;
+        let version = mf.version.clone().ok_or_else(|| HErrKind::ManifestFailure("version".into()))?;
 
         Ok(Some(UpgradeData {
             name: mf.name.clone(),
@@ -260,9 +262,8 @@ pub fn upgrade(data: &UpgradeData) -> Result<()> {
 
     // CC service contacts on result
     info!("helm {}", upgradevec.join(" "));
-    hexec(upgradevec).chain_err(||
-        ErrorKind::HelmUpgradeFailure(data.name.clone())
-    )
+    let r = hexec(upgradevec).context(HErrKind::HelmUpgradeFailure(data.name.clone()))?;
+    Ok(r)
 }
 
 enum DiffMode {
@@ -539,7 +540,7 @@ pub fn upgrade_wrapper(svc: &str, mode: UpgradeMode, region: &Region, conf: &Con
                     handle_upgrade_notifies(false, &udata)?;
                     // if it failed here, rollback in job : TODO: FIX kube-deploy-X jobs
                     handle_upgrade_rollbacks(&udata, &mf)?; // for now leave it in..
-                    return Err(ErrorKind::UpgradeTimeout(mf.name.clone(), mf.estimate_wait_time()).into());
+                    return Err(HErrKind::UpgradeTimeout(mf.name.clone(), mf.estimate_wait_time()))?
                 }
             }
         };

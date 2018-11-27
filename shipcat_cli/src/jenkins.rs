@@ -1,4 +1,3 @@
-use super::{Result, ErrorKind};
 use chrono::{Utc, TimeZone};
 use jenkins_api::{JenkinsBuilder, Jenkins};
 use jenkins_api::job::CommonJob;
@@ -8,15 +7,62 @@ use jenkins_api::action::ParametersAction;
 use std::env;
 use std::collections::BTreeMap;
 
+// New failure error type
+#[derive(Debug)]
+struct JError {
+    inner: Context<JErrKind>,
+}
+// its associated enum
+#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+enum JErrKind {
+    #[fail(display = "Failed to get jenkins job '{}'", _0)]
+    MissingJenkinsJob(String),
+
+    #[fail(display = "Failed to create jenkins client")]
+    JenkinsFailure,
+
+    #[fail(display = "JENKINS_API_URL not specified")]
+    MissingJenkinsUrl,
+
+    #[fail(display = "JENKINS_API_USER not specified")]
+    MissingJenkinsUser,
+}
+use failure::{Error, Fail, Context, Backtrace, ResultExt};
+use std::fmt::{self, Display};
+
+// boilerplate error wrapping (might go away)
+impl Fail for JError {
+    fn cause(&self) -> Option<&Fail> { self.inner.cause() }
+    fn backtrace(&self) -> Option<&Backtrace> { self.inner.backtrace() }
+}
+impl Display for JError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+impl From<JErrKind> for JError {
+    fn from(kind: JErrKind) -> JError {
+        JError { inner: Context::new(kind) }
+    }
+}
+impl From<Context<JErrKind>> for JError {
+    fn from(inner: Context<JErrKind>) -> JError {
+        JError { inner: inner }
+    }
+}
+type Result<T> = std::result::Result<T, Error>;
+
+// helpers
+
 fn env_user() -> Result<String> {
-    env::var("JENKINS_API_USER").map_err(|_| ErrorKind::MissingJenkinsUser.into())
+    Ok(env::var("JENKINS_API_USER").context(JErrKind::MissingJenkinsUser)?)
 }
 fn env_pass() -> Option<String> {
     env::var("JENKINS_API_TOKEN").ok()
 }
 
 fn env_url() -> Result<String> {
-    env::var("JENKINS_URL").map_err(|_| ErrorKind::MissingJenkinsUrl.into())
+    Ok(env::var("JENKINS_URL").context(JErrKind::MissingJenkinsUrl)?)
 }
 
 fn get_client() -> Result<Jenkins> {
@@ -24,7 +70,7 @@ fn get_client() -> Result<Jenkins> {
         .with_user(&env_user()?, env_pass().as_ref().map(String::as_str))
         .build().map_err(|e| {
             error!("Failed to create jenkins client {}", e);
-            ErrorKind::JenkinsFailure
+            JErrKind::JenkinsFailure
         })?
     )
 }
@@ -32,7 +78,7 @@ fn get_client() -> Result<Jenkins> {
 fn get_job(client: &Jenkins, job: &str) -> Result<CommonJob> {
     Ok(client.get_job(job).map_err(|e| {
         error!("Failed to get job {}", e);
-        ErrorKind::MissingJenkinsJob(job.into())
+        JErrKind::MissingJenkinsJob(job.into())
     })?)
 }
 
@@ -165,7 +211,7 @@ pub fn latest_console(svc: &str, reg: &str) -> Result<()> {
     let client = get_client()?;
     let jobname = format!("kube-deploy-{}", reg);
     if let Some(build) = find_build_by_parameter(&client, &jobname, svc)? {
-        let console = build.get_console(&client).unwrap();
+        let console = build.get_console(&client)?;
         print!("{}", console);
     }
     Ok(())
@@ -176,7 +222,7 @@ pub fn specific_console(svc: &str, nr: u32, reg: &str) -> Result<()> {
     let client = get_client()?;
     let jobname = format!("kube-deploy-{}", reg);
     if let Some(build) = find_build_by_nr(&client, &jobname, nr, svc)? {
-        let console = build.get_console(&client).unwrap();
+        let console = build.get_console(&client)?;
         print!("{}", console);
     }
     Ok(())

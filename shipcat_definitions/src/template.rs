@@ -4,18 +4,11 @@ use std::iter;
 use tera::{self, Value, Tera, Context};
 use super::{Result};
 
-use failure::{Fail, ResultExt};
+use failure::{Fail, ResultExt, SyncFailure};
 
-use std::sync::Mutex;
 #[derive(Debug, Fail)]
-#[fail(display = "tera error")]
-pub struct TeraError(Mutex<tera::Error>, String);
-impl TeraError {
-    pub fn new(e: tera::Error, reason: String) -> TeraError {
-        // tera::Error is an error-chain error and must be wrapped
-        TeraError(Mutex::new(e), reason)
-    }
-}
+#[fail(display = "tera error: {}", _0)]
+pub struct TeraError(String);
 
 #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
 fn indent(v: Value, m: HashMap<String, Value>) -> tera::Result<Value> {
@@ -70,15 +63,15 @@ fn read_template_file(svc: &str, tmpl: &str) -> Result<String> {
 pub fn render_file_data(data: String, context: &Context) -> Result<String> {
     let mut tera = Tera::default();
     tera.add_raw_template("one_off", &data)
-        .map_err(|e| TeraError::new(e,
-            format!("Failed to add file template {}", data)
-        ))?;;
+        .map_err(SyncFailure::new)?;
+        //.context(format!("Failed to add file template {}", data))?;
     tera.autoescape_on(vec!["html"]);
     tera.register_filter("indent", indent);
     tera.register_filter("as_secret", as_secret);
 
     let result = tera.render("one_off", context)
-        .map_err(|e| TeraError::new(e, "Failed to render one_off".into()) )?;
+        .map_err(SyncFailure::new)?;
+        //.map_err(|e| TeraError::new(e, "Failed to render one_off".into()) )?;
     let mut xs = vec![];
     for l in result.lines() {
         // trim whitespace (mostly to satisfy linters)
@@ -91,12 +84,14 @@ pub fn render_file_data(data: String, context: &Context) -> Result<String> {
 pub fn one_off(tpl: &str, ctx: &Context) -> Result<String> {
     let mut tera = Tera::default();
     tera.add_raw_template("one_off", tpl)
-        .map_err(|e| TeraError::new(e,
-            format!("Failed to add raw template {}", tpl)
-        ))?;;
+        .map_err(SyncFailure::new)?;
+        //.map_err(|e| TeraError::new(e,
+        //    format!("Failed to add raw template {}", tpl)
+        //))?;;
     tera.register_filter("as_secret", as_secret);
     let res = tera.render("one_off", ctx)
-        .map_err(|e| TeraError::new(e, "Failed to render one_off".into()) )?;
+        .map_err(SyncFailure::new)?;
+        //.map_err(|e| TeraErrorew(e, "Failed to render one_off".into()) )?;
     Ok(res)
 }
 

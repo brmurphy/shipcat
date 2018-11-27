@@ -3,7 +3,6 @@
 ///
 
 use reqwest;
-use super::{Result, ErrorKind, ResultExt};
 use chrono::Utc;
 use std::env;
 
@@ -31,16 +30,60 @@ pub struct Annotation {
     pub time: TimeSpec,
 }
 
+
+// All main errors that can happen from grafana hook
+
+// New failure error type
+#[derive(Debug)]
+struct GError {
+    inner: Context<GErrKind>,
+}
+// its associated enum
+#[derive(Clone, Eq, PartialEq, Debug, Fail)]
+enum GErrKind {
+    #[fail(display = "GRAFANA_SHIPCAT_HOOK_URL not specified")]
+    MissingGrafanaUrl,
+
+    #[fail(display = "GRAFANA_SHIPCAT_TOKEN not specified")]
+    MissingGrafanaToken,
+
+    #[fail(display = "could not access URL '{}'", _0)]
+    Url(reqwest::Url)
+}
+use failure::{Error, Fail, Context, Backtrace, ResultExt};
+use std::fmt::{self, Display};
+
+// boilerplate error wrapping (might go away)
+impl Fail for GError {
+    fn cause(&self) -> Option<&Fail> { self.inner.cause() }
+    fn backtrace(&self) -> Option<&Backtrace> { self.inner.backtrace() }
+}
+impl Display for GError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Display::fmt(&self.inner, f)
+    }
+}
+impl From<GErrKind> for GError {
+    fn from(kind: GErrKind) -> GError {
+        GError { inner: Context::new(kind) }
+    }
+}
+impl From<Context<GErrKind>> for GError {
+    fn from(inner: Context<GErrKind>) -> GError {
+        GError { inner: inner }
+    }
+}
+type Result<T> = std::result::Result<T, Error>;
+
+
 /// Extracts grafana URL + HTTP scheme from environment
 pub fn env_hook_url() -> Result<String> {
-    env::var("GRAFANA_SHIPCAT_HOOK_URL")
-        .map_err(|_| ErrorKind::MissingGrafanaUrl.into())
+    Ok(env::var("GRAFANA_SHIPCAT_HOOK_URL").context(GErrKind::MissingGrafanaUrl)?)
 }
 
 /// Extracts grafana API key from environment
 pub fn env_token() -> Result<String> {
-    env::var("GRAFANA_SHIPCAT_TOKEN")
-        .map_err(|_| ErrorKind::MissingGrafanaToken.into())
+    Ok(env::var("GRAFANA_SHIPCAT_TOKEN").context(GErrKind::MissingGrafanaToken)?)
 }
 
 /// Convert timespec to UNIX time, in milliseconds
@@ -78,13 +121,13 @@ pub fn create(annotation: Annotation) -> Result<()> {
     });
 
     let url = reqwest::Url::parse(&hook_url)?.join("api/annotations")?;
-    let mkerr = || ErrorKind::Url(url.clone());
     let client = reqwest::Client::new();
 
     client.post(url.clone())
         .bearer_auth(hook_token)
         .json(&data)
         .send()
-        .chain_err(&mkerr)?;
+        .context(GErrKind::Url(url.clone()))?;
+
     Ok(())
 }
