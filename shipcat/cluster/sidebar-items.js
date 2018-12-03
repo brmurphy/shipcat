@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["helm_diff","Helm diff the region"],["helm_reconcile","Helm upgrade the region (reconcile)"]]});
+initSidebarItems({"fn":[["helm_diff","Helm diff the region"],["helm_reconcile","Helm upgrade the region (reconcile)"],["mass_crd","Apply all crds in a region"]]});

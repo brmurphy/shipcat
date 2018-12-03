@@ -141,7 +141,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>::<span class="ident">channel</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="ident">Manifest</span>, <span class="ident">Backend</span>, <span class="ident">Region</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="ident">Manifest</span>, <span class="ident">Region</span>};
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">UpgradeMode</span>, <span class="ident">UpgradeData</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">direct</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">helpers</span>;
@@ -206,9 +206,9 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This logs errors and upgrade successes individually.</span>
 <span class="doccomment">/// NB: This can reconcile lock-step upgraded services at the moment.</span>
-<span class="kw">fn</span> <span class="ident">reconcile_worker</span>(<span class="ident">tmpmf</span>: <span class="ident">Manifest</span>, <span class="ident">mode</span>: <span class="ident">UpgradeMode</span>, <span class="ident">conf</span>: <span class="ident">Config</span>, <span class="ident">region</span>: <span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UpgradeData</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">svc</span> <span class="op">=</span> <span class="ident">tmpmf</span>.<span class="ident">name</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">completed</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>, <span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>;
+<span class="kw">fn</span> <span class="ident">reconcile_worker</span>(<span class="kw-2">mut</span> <span class="ident">mf</span>: <span class="ident">Manifest</span>, <span class="ident">mode</span>: <span class="ident">UpgradeMode</span>, <span class="ident">_conf</span>: <span class="ident">Config</span>, <span class="ident">region</span>: <span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UpgradeData</span><span class="op">&gt;&gt;</span> {
+    <span class="ident">mf</span> <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">complete</span>(<span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">svc</span> <span class="op">=</span> <span class="ident">mf</span>.<span class="ident">name</span>.<span class="ident">clone</span>();
 
     <span class="comment">// get version running now (to limit race condition with deploys)</span>
     <span class="comment">// this query also lets us detect if we have to install or simply upgrade</span>

@@ -151,7 +151,7 @@
 <span class="kw">mod</span> <span class="ident">probes</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">probes</span>::<span class="ident">Probe</span>;
 <span class="doccomment">/// Kubernetes rolling-update settings</span>
-<span class="kw">mod</span> <span class="ident">rollingupdate</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">rollingupdate</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">rollingupdate</span>::<span class="ident">RollingUpdate</span>;
 <span class="doccomment">/// Kubernetes horizontal pod autoscaler</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">autoscaling</span>;
@@ -162,7 +162,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">lifecycle</span>::{<span class="ident">LifeCycle</span>, <span class="ident">LifeCycleHandler</span>};
 
 <span class="kw">mod</span> <span class="ident">metadata</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">metadata</span>::{<span class="ident">Metadata</span>, <span class="ident">Contact</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">metadata</span>::{<span class="ident">Metadata</span>, <span class="ident">Contact</span>, <span class="ident">SlackChannel</span>};
 
 
 <span class="doccomment">/// Security related structs</span>

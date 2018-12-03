@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["AvailabilityPolicy",""]],"struct":[["RollingUpdate","Configuration parameters for Deployment.spec.strategy.rollingUpdate"]]});

@@ -71,6 +71,10 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="prelude-ty">Result</span>;
 
@@ -96,6 +100,8 @@
     <span class="ident">Empty</span>,
     <span class="ident">Extensions</span>,
     <span class="ident">Batch</span>,
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;babylontech.co.uk&quot;</span>)]</span>
+    <span class="ident">Babylontech</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
@@ -118,6 +124,8 @@
     <span class="ident">Secrets</span>,
     <span class="ident">ServiceAccounts</span>,
     <span class="ident">Services</span>,
+    <span class="ident">ShipcatManifests</span>,
+    <span class="ident">ShipcatConfigs</span>,
 }
 
 <span class="doccomment">/// We don&#39;t allow eg Delete or other operations for security reasons (least privilege).</span>

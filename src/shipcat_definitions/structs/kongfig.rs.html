@@ -534,7 +534,7 @@
 </pre><pre class="rust ">
 <span class="comment">//use super::traits::Verify;</span>
 <span class="kw">use</span> <span class="ident">structs</span>::{<span class="ident">Kong</span>, <span class="ident">Cors</span>, <span class="ident">BabylonAuthHeader</span>};
-<span class="kw">use</span> <span class="ident">config</span>::{<span class="ident">KongConfig</span>};
+<span class="kw">use</span> <span class="ident">region</span>::{<span class="ident">KongConfig</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">BTreeMap</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">ser</span>::{<span class="ident">Serialize</span>, <span class="ident">Serializer</span>, <span class="ident">SerializeMap</span>};
 
@@ -917,7 +917,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plugins</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
 
         <span class="comment">// Prepare plugins</span>
-        
+
         <span class="comment">// Always: CorrelationId</span>
         <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">CorrelationId</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">CorrelationIdPluginAttributes</span><span class="op">&gt;</span>::<span class="ident">default</span>()));
 

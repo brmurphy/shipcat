@@ -115,16 +115,14 @@
 <span id="115">115</span>
 <span id="116">116</span>
 <span id="117">117</span>
-<span id="118">118</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">Write</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">BTreeMap</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Manifest</span>, <span class="prelude-ty">Result</span>, <span class="ident">Region</span>, <span class="ident">Config</span>, <span class="ident">Backend</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Manifest</span>, <span class="prelude-ty">Result</span>, <span class="ident">Region</span>, <span class="ident">Config</span>, <span class="ident">KongConfig</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::<span class="ident">Kong</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::<span class="ident">kongfig</span>::{<span class="ident">kongfig_apis</span>, <span class="ident">kongfig_consumers</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::<span class="ident">kongfig</span>::{<span class="ident">Api</span>, <span class="ident">Consumer</span>, <span class="ident">Plugin</span>, <span class="ident">Upstream</span>, <span class="ident">Certificate</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">config</span>::<span class="ident">KongConfig</span>;
 
 <span class="doccomment">/// KongOutput matches the format expected by the Kong Configurator script</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>)]</span>

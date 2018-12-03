@@ -1,19 +1,11 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `shipcat_definitions` crate."><meta name="keywords" content="rust, rustlang, rust-lang, shipcat_definitions"><title>shipcat_definitions - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate shipcat_definitions</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'shipcat_definitions', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/shipcat_definitions/lib.rs.html#1-128' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>shipcat_definitions</a></span></h1><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
-<table><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.Config.html" title="struct shipcat_definitions::config::Config">Config</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.Region.html" title="struct shipcat_definitions::config::Region">Region</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.Team.html" title="struct shipcat_definitions::config::Team">Team</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.VaultConfig.html" title="struct shipcat_definitions::config::VaultConfig">VaultConfig</a>;</code></td></tr><tr><td><code>pub use config::<a class="enum" href="../shipcat_definitions/config/enum.VersionScheme.html" title="enum shipcat_definitions::config::VersionScheme">VersionScheme</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.ManifestDefaults.html" title="struct shipcat_definitions::config::ManifestDefaults">ManifestDefaults</a>;</code></td></tr><tr><td><code>pub use manifest::<a class="struct" href="../shipcat_definitions/manifest/struct.Manifest.html" title="struct shipcat_definitions::manifest::Manifest">Manifest</a>;</code></td></tr><tr><td><code>pub use manifest::<a class="enum" href="../shipcat_definitions/manifest/enum.ManifestType.html" title="enum shipcat_definitions::manifest::ManifestType">ManifestType</a>;</code></td></tr><tr><td><code>pub use reducers::<a class="struct" href="../shipcat_definitions/reducers/struct.ResourceBreakdown.html" title="struct shipcat_definitions::reducers::ResourceBreakdown">ResourceBreakdown</a>;</code></td></tr><tr><td><code>pub use product::<a class="struct" href="../shipcat_definitions/product/product/struct.Product.html" title="struct shipcat_definitions::product::product::Product">Product</a>;</code></td></tr><tr><td><code>pub use vault::<a class="struct" href="../shipcat_definitions/vault/struct.Vault.html" title="struct shipcat_definitions::vault::Vault">Vault</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `shipcat_definitions` crate."><meta name="keywords" content="rust, rustlang, rust-lang, shipcat_definitions"><title>shipcat_definitions - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate shipcat_definitions</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'shipcat_definitions', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/shipcat_definitions/lib.rs.html#1-140' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>shipcat_definitions</a></span></h1><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
+<table><tr><td><code>pub use region::<a class="struct" href="../shipcat_definitions/region/struct.Region.html" title="struct shipcat_definitions::region::Region">Region</a>;</code></td></tr><tr><td><code>pub use region::<a class="struct" href="../shipcat_definitions/region/struct.VaultConfig.html" title="struct shipcat_definitions::region::VaultConfig">VaultConfig</a>;</code></td></tr><tr><td><code>pub use region::<a class="enum" href="../shipcat_definitions/region/enum.VersionScheme.html" title="enum shipcat_definitions::region::VersionScheme">VersionScheme</a>;</code></td></tr><tr><td><code>pub use region::<a class="struct" href="../shipcat_definitions/region/struct.KongConfig.html" title="struct shipcat_definitions::region::KongConfig">KongConfig</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.Config.html" title="struct shipcat_definitions::config::Config">Config</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.Cluster.html" title="struct shipcat_definitions::config::Cluster">Cluster</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.Team.html" title="struct shipcat_definitions::config::Team">Team</a>;</code></td></tr><tr><td><code>pub use config::<a class="struct" href="../shipcat_definitions/config/struct.ManifestDefaults.html" title="struct shipcat_definitions::config::ManifestDefaults">ManifestDefaults</a>;</code></td></tr><tr><td><code>pub use manifest::<a class="struct" href="../shipcat_definitions/manifest/struct.Manifest.html" title="struct shipcat_definitions::manifest::Manifest">Manifest</a>;</code></td></tr><tr><td><code>pub use vault::<a class="struct" href="../shipcat_definitions/vault/struct.Vault.html" title="struct shipcat_definitions::vault::Vault">Vault</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class="mod" href="config/index.html"
                                   title='mod shipcat_definitions::config'>config</a></td>
                            <td class='docblock-short'>
-                                <p>Master config for manifests repositories</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="filebacked/index.html"
-                                  title='mod shipcat_definitions::filebacked'>filebacked</a></td>
-                           <td class='docblock-short'>
-                                <p>File backing</p>
+                                <p>Master config with cross-region data</p>
 
                            </td>
                        </tr>
@@ -33,17 +25,10 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="mod" href="product/index.html"
-                                  title='mod shipcat_definitions::product'>product</a></td>
+                           <td><a class="mod" href="region/index.html"
+                                  title='mod shipcat_definitions::region'>region</a></td>
                            <td class='docblock-short'>
-                                
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="reducers/index.html"
-                                  title='mod shipcat_definitions::reducers'>reducers</a></td>
-                           <td class='docblock-short'>
-                                <p>Reducers used by shipcat get</p>
+                                <p>Config with regional data</p>
 
                            </td>
                        </tr>
@@ -73,6 +58,30 @@
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Crd.html"
+                                  title='struct shipcat_definitions::Crd'>Crd</a></td>
+                           <td class='docblock-short'>
+                                <p>Basic CRD wrapper struct</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.CrdEvent.html"
+                                  title='struct shipcat_definitions::CrdEvent'>CrdEvent</a></td>
+                           <td class='docblock-short'>
+                                <p>CRD Event wrapper</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.CrdList.html"
+                                  title='struct shipcat_definitions::CrdList'>CrdList</a></td>
+                           <td class='docblock-short'>
+                                <p>Basic CRD List wrapper struct</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="struct" href="struct.Error.html"
                                   title='struct shipcat_definitions::Error'>Error</a></td>
                            <td class='docblock-short'>
@@ -82,6 +91,22 @@
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
                        <tr class=' module-item'>
+                           <td><a class="enum" href="enum.ConfigType.html"
+                                  title='enum shipcat_definitions::ConfigType'>ConfigType</a></td>
+                           <td class='docblock-short'>
+                                <p>Various states a Config can exist in depending on resolution.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CrdEventType.html"
+                                  title='enum shipcat_definitions::CrdEventType'>CrdEventType</a></td>
+                           <td class='docblock-short'>
+                                <p>Types of events returned from watch requests</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="enum" href="enum.ErrorKind.html"
                                   title='enum shipcat_definitions::ErrorKind'>ErrorKind</a></td>
                            <td class='docblock-short'>
@@ -90,14 +115,6 @@
                            </td>
                        </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Backend.html"
-                                  title='trait shipcat_definitions::Backend'>Backend</a></td>
-                           <td class='docblock-short'>
-                                <p>Behavioural trait for where a Manifest backend gets its data from.</p>
-
-                           </td>
-                       </tr>
                        <tr class=' module-item'>
                            <td><a class="trait" href="trait.ResultExt.html"
                                   title='trait shipcat_definitions::ResultExt'>ResultExt</a></td>

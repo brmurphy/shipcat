@@ -101,7 +101,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// These may be specified in addition to the main deployment `env` vars</span>
     <span class="doccomment">/// or as fresh variables, depending on `preserveEnv`.</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;EnvVars::is_empty&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">env</span>: <span class="ident">EnvVars</span>,
 
     <span class="doccomment">/// Add environment variables from parent deployment into this worker</span>

@@ -441,75 +441,25 @@
 <span id="441">441</span>
 <span id="442">442</span>
 <span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
-<span id="458">458</span>
-<span id="459">459</span>
-<span id="460">460</span>
-<span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
-<span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
-<span id="474">474</span>
-<span id="475">475</span>
-<span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
 </pre><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">BTreeMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-
 <span class="kw">use</span> <span class="ident">semver</span>::<span class="ident">Version</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">BTreeMap</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Vault</span>;
+
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
+<span class="kw">use</span> <span class="ident">structs</span>::<span class="ident">SlackChannel</span>;
+
+
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">Error</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::{<span class="ident">Kong</span>, <span class="ident">Contact</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">structs</span>::{<span class="ident">Contact</span>};
+<span class="kw">use</span> <span class="ident">states</span>::<span class="ident">ConfigType</span>;
+<span class="kw">use</span> <span class="ident">region</span>::<span class="ident">Region</span>;
+
+<span class="comment">// ----------------------------------------------------------------------------------</span>
 
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
@@ -534,228 +484,34 @@
     }
 }
 
-<span class="doccomment">/// Versioning Scheme used in region</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// This is valdiated strictly using `shipcat validate` when versions are found in manifests.</span>
-<span class="doccomment">/// Otherwise, it&#39;s validated on upgrade time (via `shipcat apply`) when it&#39;s passed.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">VersionScheme</span> {
-    <span class="doccomment">/// Version must be valid semver (no leading v)</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is the assumed default for regions that lock versions in manifests.</span>
-    <span class="ident">Semver</span>,
-    <span class="doccomment">/// Version must be valid semver or a 40 character hex (git sha)</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This can be used for rolling environments that does not lock versions in manifests.</span>
-    <span class="ident">GitShaOrSemver</span>,
-}
-
-<span class="doccomment">/// Version validator</span>
-<span class="kw">impl</span> <span class="ident">VersionScheme</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ver</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">use</span> <span class="ident">regex</span>::<span class="ident">Regex</span>;
-        <span class="kw">let</span> <span class="ident">gitre</span> <span class="op">=</span> <span class="ident">Regex</span>::<span class="ident">new</span>(<span class="string">r&quot;^[0-9a-f\-]{40}$&quot;</span>).<span class="ident">unwrap</span>();
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">VersionScheme</span>::<span class="ident">GitShaOrSemver</span> <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">gitre</span>.<span class="ident">is_match</span>(<span class="kw-2">&amp;</span><span class="ident">ver</span>) <span class="op">&amp;&amp;</span> <span class="ident">Version</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">ver</span>).<span class="ident">is_err</span>() {
-                    <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Illegal tag {} (floating tags cannot be rolled back please use 40 char git sha or semver)&quot;</span>, <span class="ident">ver</span>);
-                }
-            },
-            <span class="ident">VersionScheme</span>::<span class="ident">Semver</span> <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="ident">Version</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">ver</span>).<span class="ident">is_err</span>() {
-                    <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Version {} is not a semver version in a region using semver versions&quot;</span>, <span class="ident">ver</span>);
-                }
-            },
-        };
-        <span class="prelude-val">Ok</span>(())
-    }
-}
 
 
 <span class="doccomment">/// Kubernetes cluster information</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Cluster</span> {
+    <span class="doccomment">/// Name of the cluster</span>
+    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="doccomment">/// Url to the Kubernetes api server</span>
     <span class="kw">pub</span> <span class="ident">api</span>: <span class="ident">String</span>,
     <span class="doccomment">/// What regions this cluster control (perhaps not exclusively)</span>
     <span class="kw">pub</span> <span class="ident">regions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
-<span class="doccomment">/// Vault configuration for a region</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VaultConfig</span> {
-    <span class="doccomment">/// Vault url up to and including port</span>
-    <span class="kw">pub</span> <span class="ident">url</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Root folder under secret/</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Typically, the name of the region to disambiguate.</span>
-    <span class="kw">pub</span> <span class="ident">folder</span>: <span class="ident">String</span>,
-}
-
-<span class="comment">//#[derive(Serialize, Deserialize, Clone, Default)]</span>
-<span class="comment">//#[serde(deny_unknown_fields)]</span>
-<span class="comment">//pub struct HostPort {</span>
-<span class="comment">//    /// Hostname || IP || FQDN</span>
-<span class="comment">//    pub host: String,</span>
-<span class="comment">//    /// Port</span>
-<span class="comment">//    pub port: u32,</span>
-<span class="comment">//}</span>
-
-<span class="doccomment">/// Kafka configuration for a region</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KafkaConfig</span> {
-    <span class="doccomment">/// Broker urls in &quot;hostname:port&quot; format.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// These are injected in to the manifest.kafka struct if it&#39;s set.</span>
-    <span class="kw">pub</span> <span class="ident">brokers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-}
-
-<span class="doccomment">/// Kong configuration for a region</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span> <span class="comment">// TODO: better Default impl</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KongConfig</span> {
-    <span class="doccomment">/// Base URL to use (e.g. uk.dev.babylontech.co.uk)</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">base_url</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Configuration API URL (e.g. https://kong-admin-ops.dev.babylontech.co.uk)</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">config_url</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Kong token expiration time (in seconds)</span>
-    <span class="kw">pub</span> <span class="ident">kong_token_expiration</span>: <span class="ident">u32</span>,
-    <span class="kw">pub</span> <span class="ident">oauth_provision_key</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// TCP logging options</span>
-    <span class="kw">pub</span> <span class="ident">tcp_log</span>: <span class="ident">KongTcpLogConfig</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">anonymous_consumers</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">KongAnonymousConsumers</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;BTreeMap::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">consumers</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">KongOauthConsumer</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Vec::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">internal_ips_whitelist</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">extra_apis</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Kong</span><span class="op">&gt;</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KongAnonymousConsumers</span> {
-    <span class="kw">pub</span> <span class="ident">anonymous</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KongOauthConsumer</span> {
-    <span class="kw">pub</span> <span class="ident">oauth_client_id</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">oauth_client_secret</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">username</span>: <span class="ident">String</span>
-}
-
-<span class="kw">impl</span> <span class="ident">KongConfig</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">secrets</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">vault</span>: <span class="kw-2">&amp;</span><span class="ident">Vault</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">for</span> (<span class="ident">svc</span>, <span class="ident">data</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">consumers</span> {
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">oauth_client_id</span> <span class="op">==</span> <span class="string">&quot;IN_VAULT&quot;</span> {
-                <span class="kw">let</span> <span class="ident">vkey</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}/kong/consumers/{}_oauth_client_id&quot;</span>, <span class="ident">region</span>, <span class="ident">svc</span>);
-                <span class="ident">data</span>.<span class="ident">oauth_client_id</span> <span class="op">=</span> <span class="ident">vault</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="ident">vkey</span>)<span class="question-mark">?</span>;
-            }
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">oauth_client_secret</span> <span class="op">==</span> <span class="string">&quot;IN_VAULT&quot;</span> {
-                <span class="kw">let</span> <span class="ident">vkey</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}/kong/consumers/{}_oauth_client_secret&quot;</span>, <span class="ident">region</span>, <span class="ident">svc</span>);
-                <span class="ident">data</span>.<span class="ident">oauth_client_secret</span> <span class="op">=</span> <span class="ident">vault</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="ident">vkey</span>)<span class="question-mark">?</span>;
-            }
-        }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">oauth_provision_key</span> <span class="op">==</span> <span class="string">&quot;IN_VAULT&quot;</span> {
-            <span class="kw">let</span> <span class="ident">vkey</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}/kong/oauth_provision_key&quot;</span>, <span class="ident">region</span>);
-            <span class="self">self</span>.<span class="ident">oauth_provision_key</span> <span class="op">=</span> <span class="ident">vault</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="ident">vkey</span>)<span class="question-mark">?</span>;
-        }
-        <span class="prelude-val">Ok</span>(())
-    }
-    <span class="kw">fn</span> <span class="ident">verify_secrets_exist</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vault</span>: <span class="kw-2">&amp;</span><span class="ident">Vault</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">expected</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        <span class="kw">for</span> (<span class="ident">svc</span>, <span class="ident">data</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">consumers</span> {
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">oauth_client_id</span> <span class="op">==</span> <span class="string">&quot;IN_VAULT&quot;</span> {
-                <span class="ident">expected</span>.<span class="ident">push</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}_oauth_client_id&quot;</span>, <span class="ident">svc</span>));
-            }
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">oauth_client_secret</span> <span class="op">==</span> <span class="string">&quot;IN_VAULT&quot;</span> {
-                <span class="ident">expected</span>.<span class="ident">push</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}_oauth_client_secret&quot;</span>, <span class="ident">svc</span>));
-            }
-        }
-        <span class="kw">if</span> <span class="ident">expected</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(()); <span class="comment">// no point trying to cross reference</span>
-        }
-        <span class="kw">let</span> <span class="ident">secpth</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}/kong/consumers&quot;</span>, <span class="ident">region</span>);
-        <span class="kw">let</span> <span class="ident">found</span> <span class="op">=</span> <span class="ident">vault</span>.<span class="ident">list</span>(<span class="kw-2">&amp;</span><span class="ident">secpth</span>)<span class="question-mark">?</span>;
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Found kong secrets {:?} for {}&quot;</span>, <span class="ident">found</span>, <span class="ident">region</span>);
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">expected</span> {
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">found</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>) {
-                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Kong secret {} not found in {} vault&quot;</span>, <span class="ident">v</span>, <span class="ident">region</span>);
-            }
-        }
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KongTcpLogConfig</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">host</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">port</span>: <span class="ident">String</span>,
-}
-
-<span class="doccomment">/// A region is an abstract kube context</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Either it&#39;s a pure kubernetes context with a namespace and a cluster,</span>
-<span class="doccomment">/// or it&#39;s an abstract concept with many associated real kubernetes contexts.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Region</span> {
-    <span class="doccomment">/// Name of region</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Team</span> {
+    <span class="doccomment">/// Team name</span>
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Kubernetes namespace</span>
-    <span class="kw">pub</span> <span class="ident">namespace</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Environment (e.g. `dev` or `staging`)</span>
-    <span class="kw">pub</span> <span class="ident">environment</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Versioning scheme</span>
-    <span class="kw">pub</span> <span class="ident">versioningScheme</span>: <span class="ident">VersionScheme</span>,
-
-    <span class="doccomment">/// Important base urls that can be templated in evars</span>
+    <span class="doccomment">/// Code owners for this team</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">base_urls</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
-
-    <span class="doccomment">/// Environment variables to inject</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;BTreeMap::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">env</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Kong configuration for the region</span>
+    <span class="kw">pub</span> <span class="ident">owners</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Contact</span><span class="op">&gt;</span>,
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">kong</span>: <span class="ident">KongConfig</span>,
-    <span class="doccomment">/// List of Whitelisted IPs</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Vec::is_empty&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">ip_whitelist</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Kafka configuration for the region</span>
+    <span class="doccomment">/// Default support channel - human interaction</span>
+    <span class="kw">pub</span> <span class="ident">support</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SlackChannel</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Default notifications channel - automated messages</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">kafka</span>: <span class="ident">KafkaConfig</span>,
-    <span class="doccomment">/// Vault configuration for the region</span>
-    <span class="kw">pub</span> <span class="ident">vault</span>: <span class="ident">VaultConfig</span>,
-    <span class="doccomment">/// List of locations the region serves</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">locations</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">notifications</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SlackChannel</span><span class="op">&gt;</span>,
 }
-
-<span class="kw">impl</span> <span class="ident">Region</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">secrets</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vault</span>::<span class="ident">regional</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">vault</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">kong</span>.<span class="ident">secrets</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_secrets_exist</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vault</span>::<span class="ident">regional</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">vault</span>)<span class="question-mark">?</span>;
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Validating kong secrets for {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>);
-        <span class="self">self</span>.<span class="ident">kong</span>.<span class="ident">verify_secrets_exist</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
@@ -764,15 +520,24 @@
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GithubParameters</span> {
+    <span class="doccomment">/// Location name</span>
+    <span class="kw">pub</span> <span class="ident">organisation</span>: <span class="ident">String</span>,
+}
+
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Team</span> {
-    <span class="doccomment">/// Team name</span>
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Code owners for this team</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">owners</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Contact</span><span class="op">&gt;</span>,
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SlackParameters</span> {
+    <span class="doccomment">/// Location name</span>
+    <span class="kw">pub</span> <span class="ident">team</span>: <span class="ident">String</span>,
 }
+
+
+<span class="comment">// ----------------------------------------------------------------------------------</span>
+
 
 <span class="doccomment">/// Main manifest, serializable from shipcat.yml</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
@@ -793,34 +558,51 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Not public because access regions may or may not have secrets filled in.</span>
     <span class="doccomment">/// This makes sure we don&#39;t start using the wrong one.</span>
-    <span class="ident">regions</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Region</span><span class="op">&gt;</span>,
+    <span class="ident">regions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Region</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Location definitions</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
     <span class="kw">pub</span> <span class="ident">locations</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Location</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// Slack parameters</span>
+    <span class="kw">pub</span> <span class="ident">slack</span>: <span class="ident">SlackParameters</span>,
+
+    <span class="doccomment">/// Gihub parameters</span>
+    <span class="kw">pub</span> <span class="ident">github</span>: <span class="ident">GithubParameters</span>,
 
     <span class="doccomment">/// Team definitions</span>
     <span class="kw">pub</span> <span class="ident">teams</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Team</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Shipcat version pin</span>
     <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">Version</span>,
+
+    <span class="comment">// Internal state of the config</span>
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing</span>, <span class="ident">skip_deserializing</span>)]</span>
+    <span class="ident">kind</span>: <span class="ident">ConfigType</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Config</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">defs</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">defaults</span>;
         <span class="comment">// verify default chart exists</span>
-        <span class="kw">let</span> <span class="ident">chart</span> <span class="op">=</span> <span class="ident">Path</span>::<span class="ident">new</span>(<span class="string">&quot;.&quot;</span>).<span class="ident">join</span>(<span class="string">&quot;charts&quot;</span>).<span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="ident">defs</span>.<span class="ident">chart</span>).<span class="ident">join</span>(<span class="string">&quot;Chart.yaml&quot;</span>);
-        <span class="kw">if</span> <span class="op">!</span> <span class="ident">chart</span>.<span class="ident">is_file</span>() {
-            <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Default chart {} does not exist&quot;</span>, <span class="self">self</span>.<span class="ident">defaults</span>.<span class="ident">chart</span>);
+        <span class="kw">if</span> <span class="macro">cfg</span><span class="macro">!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;filesystem&quot;</span>) {
+            <span class="kw">let</span> <span class="ident">chart</span> <span class="op">=</span> <span class="ident">Path</span>::<span class="ident">new</span>(<span class="string">&quot;.&quot;</span>).<span class="ident">join</span>(<span class="string">&quot;charts&quot;</span>).<span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="ident">defs</span>.<span class="ident">chart</span>).<span class="ident">join</span>(<span class="string">&quot;Chart.yaml&quot;</span>);
+            <span class="kw">if</span> <span class="op">!</span> <span class="ident">chart</span>.<span class="ident">is_file</span>() {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Default chart {} does not exist&quot;</span>, <span class="self">self</span>.<span class="ident">defaults</span>.<span class="ident">chart</span>);
+            }
         }
         <span class="kw">if</span> <span class="ident">defs</span>.<span class="ident">imagePrefix</span>.<span class="ident">ends_with</span>(<span class="string">&#39;/&#39;</span>) {
             <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;image prefix must not end with a slash&quot;</span>);
         }
 
         <span class="kw">for</span> (<span class="ident">cname</span>, <span class="ident">clst</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">clusters</span> {
+            <span class="kw">if</span> <span class="ident">cname</span> <span class="op">!=</span> <span class="kw-2">&amp;</span><span class="ident">clst</span>.<span class="ident">name</span> {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;clust &#39;{}&#39; must have a &#39;.name&#39; equal to its key in clusters&quot;</span>, <span class="ident">cname</span>);
+            }
+            <span class="comment">// can&#39;t actually verify this in a smaller manifest..</span>
+            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;filesystem&quot;</span>)]</span>
             <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">clst</span>.<span class="ident">regions</span> {
-                <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">contains_key</span>(<span class="ident">r</span>) {
+                <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">has_region</span>(<span class="ident">r</span>) <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">ConfigType</span>::<span class="ident">File</span> {
                     <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;cluster {} defines undefined region {}&quot;</span>, <span class="ident">cname</span>, <span class="ident">r</span>);
                 }
             }
@@ -828,37 +610,39 @@
 
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">contextAliases</span> {
             <span class="comment">// all contextAlias values must exist as defined regions</span>
-            <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">contains_key</span>(<span class="ident">v</span>) {
+            <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">has_region</span>(<span class="ident">v</span>) {
                 <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;context alias {} points to undefined region {}&quot;</span>, <span class="ident">k</span>, <span class="ident">v</span>);
             }
             <span class="comment">// cannot alias something that exists!</span>
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">contains_key</span>(<span class="ident">k</span>) {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">has_region</span>(<span class="ident">k</span>) {
                 <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;cannot self-alias region {}&quot;</span>, <span class="ident">k</span>);
             }
         }
 
-        <span class="kw">for</span> (<span class="ident">r</span>, <span class="ident">data</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">regions</span> {
-            <span class="kw">if</span> <span class="ident">r</span> <span class="op">!=</span> <span class="kw-2">&amp;</span><span class="ident">data</span>.<span class="ident">name</span> {
-                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;region &#39;{}&#39; must have a &#39;.name&#39; equal to its key in regions&quot;</span>, <span class="ident">r</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used_kong_urls</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+        <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">regions</span> {
+            <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">namespace</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Need to set `namespace` in {}&quot;</span>, <span class="ident">r</span>.<span class="ident">name</span>);
             }
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">namespace</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
-                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Need to set `namespace` in {}&quot;</span>, <span class="ident">r</span>);
+            <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">environment</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Need to set `environment` in {}&quot;</span>, <span class="ident">r</span>.<span class="ident">name</span>)
             }
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">environment</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
-                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Need to set `environment` in {}&quot;</span>, <span class="ident">r</span>)
+            <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">vault</span>.<span class="ident">url</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Need to set vault url for {}&quot;</span>, <span class="ident">r</span>.<span class="ident">name</span>);
             }
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">vault</span>.<span class="ident">url</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
-                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Need to set vault url for {}&quot;</span>, <span class="ident">r</span>);
+            <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">vault</span>.<span class="ident">folder</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
+                <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Need to set the vault folder {}&quot;</span>, <span class="ident">r</span>.<span class="ident">name</span>);
             }
-            <span class="kw">if</span> <span class="ident">data</span>.<span class="ident">vault</span>.<span class="ident">folder</span> <span class="op">==</span> <span class="string">&quot;&quot;</span> {
-                <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Need to set the vault folder {}&quot;</span>, <span class="ident">r</span>);
-            }
-            <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">data</span>.<span class="ident">base_urls</span> {
+            <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="ident">base_urls</span> {
                 <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">ends_with</span>(<span class="string">&#39;/&#39;</span>) {
                     <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;A base_url must not end with a slash&quot;</span>);
                 }
             }
-            <span class="ident">data</span>.<span class="ident">kong</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
+            <span class="ident">r</span>.<span class="ident">kong</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
+            <span class="kw">if</span> <span class="ident">used_kong_urls</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>.<span class="ident">kong</span>.<span class="ident">config_url</span>) {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Cannot reuse kong config urls for {} across regions&quot;</span>, <span class="ident">r</span>.<span class="ident">name</span>);
+            }
+            <span class="ident">used_kong_urls</span>.<span class="ident">push</span>(<span class="ident">r</span>.<span class="ident">kong</span>.<span class="ident">config_url</span>.<span class="ident">clone</span>());
         }
         <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">teams</span> {
             <span class="kw">for</span> <span class="ident">o</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">t</span>.<span class="ident">owners</span> {
@@ -867,6 +651,12 @@
                 <span class="kw">if</span> <span class="ident">o</span>.<span class="ident">github</span>.<span class="ident">is_none</span>() {
                     <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Every owner must have a github id attached&quot;</span>);
                 }
+            }
+            <span class="kw">if</span> <span class="ident">t</span>.<span class="ident">support</span>.<span class="ident">is_none</span>() {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Every team must have a default support channel declared&quot;</span>);
+            }
+            <span class="kw">if</span> <span class="ident">t</span>.<span class="ident">notifications</span>.<span class="ident">is_none</span>() {
+                <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Every team must have a default notifications channel declared&quot;</span>);
             }
         }
         <span class="ident">Config</span>::<span class="ident">verify_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">version</span>)<span class="question-mark">?</span>;
@@ -887,8 +677,129 @@
         <span class="prelude-val">Ok</span>(())
     }
 
+
+
+    <span class="doccomment">/// Print Config to stdout</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">serde_yaml</span>::<span class="ident">to_string</span>(<span class="self">self</span>)<span class="question-mark">?</span>);
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="doccomment">/// Helper for list::regions</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">list_regions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">name</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>()
+    }
+
+    <span class="doccomment">/// Complete a Base config for a know to exist region</span>
+    <span class="kw">fn</span> <span class="ident">complete</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">kind</span>, <span class="ident">ConfigType</span>::<span class="ident">Base</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">len</span>(), <span class="number">1</span>);
+        <span class="self">self</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">ConfigType</span>::<span class="ident">Completed</span>;
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">name</span> <span class="op">==</span> <span class="ident">region</span>) {
+            <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">get_mut</span>(<span class="ident">idx</span>).<span class="ident">unwrap</span>().<span class="ident">secrets</span>()<span class="question-mark">?</span>;
+        } <span class="kw">else</span> {
+            <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Region {} does not exist in the config&quot;</span>, <span class="ident">region</span>)
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+
+    <span class="doccomment">/// Work out the cluster from the kube config</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Can be done unambiguously in two cases:</span>
+    <span class="doccomment">/// - cluster.name === kube context name</span>
+    <span class="doccomment">/// - region.name === kube context name &amp;&amp; region is served by one cluster only</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_cluster</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Cluster</span>, <span class="ident">Region</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_region</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+
+        <span class="comment">// 1: `cluster.name == context` (dump apps cluster with dedicated context)</span>
+        <span class="comment">// e.g. `preproduk-blue` cluster serves `preprod-uk` region</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">clusters</span>.<span class="ident">get</span>(<span class="ident">ctx</span>) {
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">c</span>.<span class="ident">clone</span>(), <span class="ident">reg</span>));
+        }
+        <span class="comment">// 2: `region.name == context` (big cluster with many namespaces and regions)</span>
+        <span class="comment">// e.g. `kops-global` cluster serving `dev-global` + `staging-global` regions</span>
+        <span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clusters</span>.<span class="ident">values</span>().<span class="ident">cloned</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
+            <span class="ident">v</span>.<span class="ident">regions</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">reg</span>.<span class="ident">name</span>)
+        }).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
+        <span class="kw">if</span> <span class="ident">candidates</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="number">1</span> {
+            <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Ambiguous context {} must be served by exactly one cluster&quot;</span>, <span class="ident">ctx</span>);
+        }
+        <span class="prelude-val">Ok</span>((<span class="ident">candidates</span>[<span class="number">0</span>].<span class="ident">clone</span>(), <span class="ident">reg</span>))
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_secrets</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">ConfigType</span>::<span class="ident">Completed</span>
+    }
+
+    <span class="doccomment">/// Retrieve region name using either a region name, or a context as a fallback</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This returns a a valid key in `self.regions` if Some.</span>
+    <span class="kw">fn</span> <span class="ident">resolve_context</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">to_string</span>();
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">has_region</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>) {
+            <span class="prelude-val">Some</span>(<span class="ident">ctx</span>)
+        }
+        <span class="comment">// otherwise search for an alias</span>
+        <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">alias</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">contextAliases</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">ctx</span>) {
+            <span class="comment">// NB: alias is guaranteed to have a corresponding region by verify</span>
+            <span class="prelude-val">Some</span>(<span class="ident">alias</span>.<span class="ident">to_string</span>())
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="kw">fn</span> <span class="ident">has_region</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">name</span> <span class="op">==</span> <span class="ident">region</span>)
+    }
+
+    <span class="doccomment">/// Region retriever interface</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This retieves the region after calling resolve_context.</span>
+    <span class="doccomment">/// Useful for small helper subcommands that do validation later.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_region</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Region</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">region</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_context</span>(<span class="ident">ctx</span>) {
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">name</span> <span class="op">==</span> <span class="ident">region</span>).<span class="ident">unwrap</span>().<span class="ident">clone</span>())
+        }
+        <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;You need to define your kube context &#39;{}&#39; in shipcat.conf regions first&quot;</span>, <span class="ident">ctx</span>)
+    }
+}
+
+<span class="doccomment">/// Filesystem accessors for Config</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// These must live in here because they use private methods herein.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;filesystem&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">Config</span> {
+    <span class="doccomment">/// Main constructor for CLI</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Pass this a region request via argument or a current context</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kind</span>: <span class="ident">ConfigType</span>, <span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Config</span>, <span class="ident">Region</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">conf</span> <span class="op">=</span> <span class="ident">Config</span>::<span class="ident">read</span>()<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span> <span class="ident">conf</span>.<span class="ident">resolve_context</span>(<span class="ident">context</span>) {
+            <span class="ident">r</span>
+        } <span class="kw">else</span> {
+            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Please use an existing kube context or add your current context to shipcat.conf&quot;</span>);
+            <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;The current kube context (&#39;{}&#39;) is not defined in shipcat.conf&quot;</span>, <span class="ident">context</span>);
+        };
+
+        <span class="kw">if</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">ConfigType</span>::<span class="ident">Completed</span> <span class="op">||</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">ConfigType</span>::<span class="ident">Base</span> {
+            <span class="ident">conf</span>.<span class="ident">remove_redundant_regions</span>(<span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>;
+        } <span class="kw">else</span> {
+            <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Config::new only supports Completed or Base type&quot;</span>);
+        }
+
+        <span class="kw">if</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">ConfigType</span>::<span class="ident">Completed</span> {
+            <span class="ident">conf</span>.<span class="ident">complete</span>(<span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>;
+        }
+        <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">conf</span>.<span class="ident">get_region</span>(<span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>((<span class="ident">conf</span>, <span class="ident">reg</span>))
+    }
+
     <span class="doccomment">/// Read a config file in an arbitrary path</span>
     <span class="kw">fn</span> <span class="ident">read_from</span>(<span class="ident">pwd</span>: <span class="kw-2">&amp;</span><span class="ident">PathBuf</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span> {
+        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
+        <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
+        <span class="kw">use</span> <span class="ident">semver</span>::<span class="ident">Version</span>;
         <span class="kw">let</span> <span class="ident">mpath</span> <span class="op">=</span> <span class="ident">pwd</span>.<span class="ident">join</span>(<span class="string">&quot;shipcat.conf&quot;</span>);
         <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;Using config in {}&quot;</span>, <span class="ident">mpath</span>.<span class="ident">display</span>());
         <span class="kw">if</span> <span class="op">!</span><span class="ident">mpath</span>.<span class="ident">exists</span>() {
@@ -936,52 +847,29 @@
         <span class="prelude-val">Ok</span>(<span class="ident">conf</span>)
     }
 
-    <span class="doccomment">/// Helper for list::regions</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">list_regions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">keys</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_all_regions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">ConfigType</span>::<span class="ident">File</span>
     }
 
-    <span class="doccomment">/// Retrieve region config from a kube context</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This should only be done once early on.</span>
-    <span class="doccomment">/// The resulting name should be passed around internally as `region`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_region</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">context</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">context</span>);
-        }
-        <span class="comment">// otherwise search for an alias</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">alias</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">contextAliases</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">alias</span>.<span class="ident">to_string</span>())
-        }
-        <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Please use an existing kube context or add your current context to shipcat.conf&quot;</span>);
-        <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;The current kube context (&#39;{}&#39;) is not defined in shipcat.conf&quot;</span>, <span class="ident">context</span>);
-    }
-
-    <span class="doccomment">/// Region retriever safe alternative</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Alternative to the above `resolve_region`.</span>
-    <span class="doccomment">/// Useful for small helper subcommands that do validation later.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_region</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">Region</span>)<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">get</span>(<span class="ident">ctx</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">ctx</span>.<span class="ident">to_string</span>(), <span class="ident">r</span>.<span class="ident">clone</span>()));
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">alias</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">contextAliases</span>.<span class="ident">get</span>(<span class="ident">ctx</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">alias</span>.<span class="ident">to_string</span>(), <span class="self">self</span>.<span class="ident">regions</span>[<span class="kw-2">&amp;</span><span class="ident">alias</span>.<span class="ident">to_string</span>()].<span class="ident">clone</span>()));
-            <span class="comment">// missing region key should&#39;ve been caught in verify above</span>
-        }
-        <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;You need to define your kube context &#39;{}&#39; in shipcat.conf regions first&quot;</span>, <span class="ident">ctx</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">KongConfig</span> {
-    <span class="kw">fn</span> <span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="doccomment">/// Filter a file based config for a known to exist region</span>
+    <span class="kw">fn</span> <span class="ident">remove_redundant_regions</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">kind</span>, <span class="ident">ConfigType</span>::<span class="ident">File</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">has_region</span>(<span class="ident">region</span>));
+        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">region</span>.<span class="ident">to_string</span>();
+        <span class="comment">// filter out cluster and aliases as well so we don&#39;t have to special case verify</span>
+        <span class="self">self</span>.<span class="ident">clusters</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clusters</span>.<span class="ident">clone</span>().<span class="ident">into_iter</span>().<span class="ident">filter</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">c</span>)<span class="op">|</span> <span class="ident">c</span>.<span class="ident">regions</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>)).<span class="ident">collect</span>();
+        <span class="self">self</span>.<span class="ident">contextAliases</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">contextAliases</span>.<span class="ident">clone</span>().<span class="ident">into_iter</span>().<span class="ident">filter</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">==</span> <span class="ident">region</span>).<span class="ident">collect</span>();
+        <span class="self">self</span>.<span class="ident">regions</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">regions</span>.<span class="ident">clone</span>().<span class="ident">into_iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">name</span> <span class="op">==</span> <span class="ident">region</span>).<span class="ident">collect</span>();
+        <span class="self">self</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">ConfigType</span>::<span class="ident">Base</span>;
         <span class="prelude-val">Ok</span>(())
     }
 }
 
 
+
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">VersionScheme</span>;
+    <span class="kw">use</span> <span class="ident">region</span>::<span class="ident">VersionScheme</span>;
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">version_validate_test</span>() {
         <span class="kw">let</span> <span class="ident">scheme</span> <span class="op">=</span> <span class="ident">VersionScheme</span>::<span class="ident">GitShaOrSemver</span>;

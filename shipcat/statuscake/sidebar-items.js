@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["output","Generate Statuscake config from a filled in global config"]]});

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `shipcat` crate."><meta name="keywords" content="rust, rustlang, rust-lang, shipcat"><title>shipcat - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate shipcat</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'shipcat', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/shipcat/lib.rs.html#1-179' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>shipcat</a></span></h1><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `shipcat` crate."><meta name="keywords" content="rust, rustlang, rust-lang, shipcat"><title>shipcat - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate shipcat</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'shipcat', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/shipcat/lib.rs.html#1-161' title='goto source code'>[src]</a></span><span class='in-band'>Crate <a class="mod" href=''>shipcat</a></span></h1><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class="mod" href="cluster/index.html"
@@ -12,7 +12,7 @@
                            <td><a class="mod" href="config/index.html"
                                   title='mod shipcat::config'>config</a></td>
                            <td class='docblock-short'>
-                                <p>Master config for manifests repositories</p>
+                                <p>Master config with cross-region data</p>
 
                            </td>
                        </tr>
@@ -57,14 +57,6 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="mod" href="jenkins/index.html"
-                                  title='mod shipcat::jenkins'>jenkins</a></td>
-                           <td class='docblock-short'>
-                                <p>A jenkins helper interface using <code>jenkinsapi</code></p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
                            <td><a class="mod" href="kong/index.html"
                                   title='mod shipcat::kong'>kong</a></td>
                            <td class='docblock-short'>
@@ -89,10 +81,26 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="mod" href="show/index.html"
+                                  title='mod shipcat::show'>show</a></td>
+                           <td class='docblock-short'>
+                                <p>Simple printers</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="mod" href="slack/index.html"
                                   title='mod shipcat::slack'>slack</a></td>
                            <td class='docblock-short'>
                                 <p>A post interface to slack using <code>slack_hook</code></p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="statuscake/index.html"
+                                  title='mod shipcat::statuscake'>statuscake</a></td>
+                           <td class='docblock-short'>
+                                <p>A small CLI Statuscake config generator interface</p>
 
                            </td>
                        </tr>
@@ -130,18 +138,18 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="struct" href="struct.Manifest.html"
-                                  title='struct shipcat::Manifest'>Manifest</a></td>
+                           <td><a class="struct" href="struct.KongConfig.html"
+                                  title='struct shipcat::KongConfig'>KongConfig</a></td>
                            <td class='docblock-short'>
-                                <p>Main manifest, serializable from shipcat.yml or the shipcat CRD.</p>
+                                <p>Kong configuration for a region</p>
 
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="struct" href="struct.Product.html"
-                                  title='struct shipcat::Product'>Product</a></td>
+                           <td><a class="struct" href="struct.Manifest.html"
+                                  title='struct shipcat::Manifest'>Manifest</a></td>
                            <td class='docblock-short'>
-                                <p>Product manifest, serializable from product.yml</p>
+                                <p>Main manifest, serializable from shipcat.yml or the shipcat CRD.</p>
 
                            </td>
                        </tr>
@@ -152,21 +160,28 @@
                                 <p>A region is an abstract kube context</p>
 
                            </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Team.html"
+                                  title='struct shipcat::Team'>Team</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.ConfigType.html"
+                                  title='enum shipcat::ConfigType'>ConfigType</a></td>
+                           <td class='docblock-short'>
+                                <p>Various states a Config can exist in depending on resolution.</p>
+
+                           </td>
+                       </tr>
                        <tr class=' module-item'>
                            <td><a class="enum" href="enum.ErrorKind.html"
                                   title='enum shipcat::ErrorKind'>ErrorKind</a></td>
                            <td class='docblock-short'>
                                 <p>The kind of an error.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="enum" href="enum.ManifestType.html"
-                                  title='enum shipcat::ManifestType'>ManifestType</a></td>
-                           <td class='docblock-short'>
-                                <p>Various states a manifest can exist in depending on resolution.</p>
 
                            </td>
                        </tr>
@@ -179,14 +194,6 @@
                            </td>
                        </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
-                       <tr class=' module-item'>
-                           <td><a class="trait" href="trait.Backend.html"
-                                  title='trait shipcat::Backend'>Backend</a></td>
-                           <td class='docblock-short'>
-                                <p>Behavioural trait for where a Manifest backend gets its data from.</p>
-
-                           </td>
-                       </tr>
                        <tr class=' module-item'>
                            <td><a class="trait" href="trait.ResultExt.html"
                                   title='trait shipcat::ResultExt'>ResultExt</a></td>

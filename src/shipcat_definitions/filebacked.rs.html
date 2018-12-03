@@ -130,69 +130,15 @@
 <span id="130">130</span>
 <span id="131">131</span>
 <span id="132">132</span>
-<span id="133">133</span>
-<span id="134">134</span>
-<span id="135">135</span>
-<span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">config</span>::{<span class="ident">Config</span>, <span class="ident">Region</span>, <span class="ident">ManifestDefaults</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 <span class="kw">use</span> <span class="ident">walkdir</span>::<span class="ident">WalkDir</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">PathBuf</span>, <span class="ident">Path</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">vault</span>::<span class="ident">Vault</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">ResultExt</span>, <span class="ident">ErrorKind</span>, <span class="ident">Manifest</span>, <span class="ident">ManifestType</span>};
-<span class="kw">use</span> <span class="ident">traits</span>::<span class="ident">Backend</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Config</span>, <span class="ident">Region</span>, <span class="ident">Manifest</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="prelude-ty">Result</span>;
+<span class="kw">use</span> <span class="ident">states</span>::{<span class="ident">ManifestType</span>};
 
 <span class="doccomment">/// Private helpers for a filebacked Manifest Backend</span>
 <span class="kw">impl</span> <span class="ident">Manifest</span> {
@@ -211,7 +157,7 @@
 
 
     <span class="doccomment">/// Fill in env overrides and apply merge rules</span>
-    <span class="kw">fn</span> <span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">defaults</span>: <span class="kw-2">&amp;</span><span class="ident">ManifestDefaults</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">merge_and_fill_defaults</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="comment">// merge service specific env overrides if they exists</span>
         <span class="kw">let</span> <span class="ident">envlocals</span> <span class="op">=</span> <span class="ident">Path</span>::<span class="ident">new</span>(<span class="string">&quot;.&quot;</span>)
             .<span class="ident">join</span>(<span class="string">&quot;services&quot;</span>)
@@ -234,7 +180,7 @@
 
             <span class="self">self</span>.<span class="ident">merge</span>(<span class="ident">other</span>)<span class="question-mark">?</span>;
         }
-        <span class="self">self</span>.<span class="ident">add_config_defaults</span>(<span class="kw-2">&amp;</span><span class="ident">defaults</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">add_config_defaults</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">add_region_implicits</span>(<span class="ident">region</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
@@ -261,9 +207,10 @@
     <span class="ident">res</span>
 }
 
-<span class="doccomment">/// Manifests backed by a manifests directory traverse the filesystem for discovery</span>
-<span class="kw">impl</span> <span class="ident">Backend</span> <span class="kw">for</span> <span class="ident">Manifest</span> {
-    <span class="kw">fn</span> <span class="ident">available</span>(<span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span> {
+
+<span class="doccomment">/// Filesystem accessors for Manifest</span>
+<span class="kw">impl</span> <span class="ident">Manifest</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">available</span>(<span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">xs</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
         <span class="kw">for</span> <span class="ident">svc</span> <span class="kw">in</span> <span class="ident">walk_services</span>() {
             <span class="kw">let</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">blank</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>)<span class="question-mark">?</span>;
@@ -274,15 +221,28 @@
         <span class="prelude-val">Ok</span>(<span class="ident">xs</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">all</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">walk_services</span>())
+    <span class="doccomment">/// Create an-all pieces manifest ready to be upgraded</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The CRD equivalent that has templates read from disk first.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">base</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">blank</span>(<span class="ident">service</span>)<span class="question-mark">?</span>;
+        <span class="comment">// fill defaults and merge regions before extracting secrets</span>
+        <span class="ident">mf</span>.<span class="ident">merge_and_fill_defaults</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>;
+        <span class="ident">mf</span>.<span class="ident">read_configs_files</span>()<span class="question-mark">?</span>;
+        <span class="ident">mf</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">ManifestType</span>::<span class="ident">Base</span>;
+
+        <span class="prelude-val">Ok</span>(<span class="ident">mf</span>)
     }
 
+    <span class="doccomment">/// Return all services found in the manifests services folder</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">walk_services</span>())
+    }
 
     <span class="doccomment">/// A super base manifest - from an unknown region</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Can be used to read global Manifest values onlys</span>
-    <span class="kw">fn</span> <span class="ident">blank</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">blank</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">pth</span> <span class="op">=</span> <span class="ident">Path</span>::<span class="ident">new</span>(<span class="string">&quot;.&quot;</span>).<span class="ident">join</span>(<span class="string">&quot;services&quot;</span>).<span class="ident">join</span>(<span class="ident">service</span>);
         <span class="kw">if</span> <span class="op">!</span><span class="ident">pth</span>.<span class="ident">exists</span>() {
             <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Service folder {} does not exist&quot;</span>, <span class="ident">pth</span>.<span class="ident">display</span>())
@@ -295,78 +255,12 @@
     }
 
     <span class="doccomment">/// Create a simple manifest that has enough for most reducers</span>
-    <span class="kw">fn</span> <span class="ident">simple</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">simple</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">blank</span>(<span class="ident">service</span>)<span class="question-mark">?</span>;
         <span class="comment">// fill defaults and merge regions before extracting secrets</span>
-        <span class="ident">mf</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>.<span class="ident">defaults</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>;
+        <span class="ident">mf</span>.<span class="ident">merge_and_fill_defaults</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>;
         <span class="ident">mf</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">ManifestType</span>::<span class="ident">Simple</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">mf</span>)
-    }
-
-
-    <span class="doccomment">/// Create a CRD equivalent manifest</span>
-    <span class="kw">fn</span> <span class="ident">base</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">blank</span>(<span class="ident">service</span>)<span class="question-mark">?</span>;
-        <span class="comment">// fill defaults and merge regions before extracting secrets</span>
-        <span class="ident">mf</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="ident">conf</span>.<span class="ident">defaults</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>;
-        <span class="ident">mf</span>.<span class="ident">read_configs_files</span>()<span class="question-mark">?</span>;
-        <span class="ident">mf</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">ManifestType</span>::<span class="ident">Base</span>;
-
-        <span class="prelude-val">Ok</span>(<span class="ident">mf</span>)
-    }
-
-    <span class="doccomment">/// Create a completed manifest with stubbed secrets (faster to retrieve)</span>
-    <span class="kw">fn</span> <span class="ident">stubbed</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">base</span>(<span class="ident">service</span>, <span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>;
-        <span class="ident">mf</span>.<span class="ident">upgrade</span>(<span class="ident">reg</span>, <span class="ident">ManifestType</span>::<span class="ident">Stubbed</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">mf</span>)
-    }
-
-    <span class="doccomment">/// Create a completed manifest fetching secrets from Vault</span>
-    <span class="kw">fn</span> <span class="ident">completed</span>(<span class="ident">service</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Manifest</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mf</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">base</span>(<span class="ident">service</span>, <span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="ident">reg</span>)<span class="question-mark">?</span>;
-        <span class="ident">mf</span>.<span class="ident">upgrade</span>(<span class="ident">reg</span>, <span class="ident">ManifestType</span>::<span class="ident">Completed</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">mf</span>)
-    }
-
-    <span class="doccomment">/// Upgrade a `Base` manifest to either a Complete or a Stubbed one</span>
-    <span class="kw">fn</span> <span class="ident">upgrade</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">reg</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>, <span class="ident">kind</span>: <span class="ident">ManifestType</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">kind</span>, <span class="ident">ManifestType</span>::<span class="ident">Base</span>); <span class="comment">// sanity</span>
-        <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">ManifestType</span>::<span class="ident">Completed</span> <span class="op">=&gt;</span> <span class="ident">Vault</span>::<span class="ident">regional</span>(<span class="kw-2">&amp;</span><span class="ident">reg</span>.<span class="ident">vault</span>)<span class="question-mark">?</span>,
-            <span class="ident">ManifestType</span>::<span class="ident">Stubbed</span> <span class="op">=&gt;</span> <span class="ident">Vault</span>::<span class="ident">mocked</span>(<span class="kw-2">&amp;</span><span class="ident">reg</span>.<span class="ident">vault</span>)<span class="question-mark">?</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Can only upgrade a Base manifest to Completed or Stubbed&quot;</span>),
-        };
-        <span class="comment">// replace one-off templates in evar strings with values</span>
-        <span class="comment">// note that this happens before secrets because:</span>
-        <span class="comment">// secrets may be injected at this step from the Region</span>
-        <span class="self">self</span>.<span class="ident">template_evars</span>(<span class="ident">reg</span>)<span class="question-mark">?</span>;
-        <span class="comment">// secrets before configs (.j2 template files use raw secret values)</span>
-        <span class="self">self</span>.<span class="ident">secrets</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="ident">reg</span>.<span class="ident">vault</span>)<span class="question-mark">?</span>;
-
-        <span class="comment">// templates last</span>
-        <span class="self">self</span>.<span class="ident">template_configs</span>(<span class="ident">reg</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">kind</span> <span class="op">=</span> <span class="ident">kind</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="doccomment">/// Verifying a manifest in the filesystem</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Needs to account for the manifest being external/disabled, then secrets.</span>
-    <span class="kw">fn</span> <span class="ident">validate</span>(<span class="ident">svc</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>, <span class="ident">secrets</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bm</span> <span class="op">=</span> <span class="ident">Manifest</span>::<span class="ident">blank</span>(<span class="ident">svc</span>)<span class="question-mark">?</span>;
-
-        <span class="kw">if</span> <span class="ident">bm</span>.<span class="ident">regions</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">region</span>.<span class="ident">name</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">bm</span>.<span class="ident">disabled</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">bm</span>.<span class="ident">external</span> {
-            <span class="kw">let</span> <span class="ident">mf</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">secrets</span> {
-                <span class="ident">Manifest</span>::<span class="ident">completed</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>, <span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>
-            } <span class="kw">else</span> {
-                <span class="ident">Manifest</span>::<span class="ident">stubbed</span>(<span class="kw-2">&amp;</span><span class="ident">svc</span>, <span class="kw-2">&amp;</span><span class="ident">conf</span>, <span class="kw-2">&amp;</span><span class="ident">region</span>)<span class="question-mark">?</span>
-            };
-            <span class="ident">mf</span>.<span class="ident">verify</span>(<span class="ident">conf</span>, <span class="ident">region</span>).<span class="ident">chain_err</span>(<span class="op">||</span> <span class="ident">ErrorKind</span>::<span class="ident">InvalidManifest</span>(<span class="ident">mf</span>.<span class="ident">name</span>))<span class="question-mark">?</span>;
-        } <span class="kw">else</span> {
-            <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;{} is not configured to be deployed in {}&quot;</span>, <span class="ident">svc</span>, <span class="ident">region</span>.<span class="ident">name</span>);
-        }
-        <span class="prelude-val">Ok</span>(())
     }
 }
 </pre>

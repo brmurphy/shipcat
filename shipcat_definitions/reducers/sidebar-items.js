@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ResourceBreakdown","Complete breakdown of resource usage in total, and split by team."]]});

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/tera-0.11.18/src/renderer/processor.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>processor.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/tera-0.11.20/src/renderer/processor.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>processor.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -800,6 +800,29 @@
 <span id="800">800</span>
 <span id="801">801</span>
 <span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -1098,6 +1121,14 @@
                             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">bail</span><span class="macro">!</span>(
                                 <span class="string">&quot;Tried to concat a value that is not a string or a number from ident {}&quot;</span>,
                                 <span class="ident">i</span>
+                            ),
+                        },
+                        <span class="ident">ExprVal</span>::<span class="ident">FunctionCall</span>(<span class="kw-2">ref</span> <span class="ident">fn_call</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">eval_tera_fn_call</span>(<span class="ident">fn_call</span>)<span class="question-mark">?</span> {
+                            <span class="ident">Value</span>::<span class="ident">String</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">res</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>),
+                            <span class="ident">Value</span>::<span class="ident">Number</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">res</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">v</span>.<span class="ident">to_string</span>()),
+                            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">bail</span><span class="macro">!</span>(
+                                <span class="string">&quot;Tried to concat a value that is not a string or a number from function call {}&quot;</span>,
+                                <span class="ident">fn_call</span>.<span class="ident">name</span>
                             ),
                         },
                         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
@@ -1459,9 +1490,24 @@
                     }
                 }
             }
+            <span class="ident">ExprVal</span>::<span class="ident">FunctionCall</span>(<span class="kw-2">ref</span> <span class="ident">fn_call</span>) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eval_tera_fn_call</span>(<span class="ident">fn_call</span>)<span class="question-mark">?</span>;
+                <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">is_i64</span>() {
+                    <span class="prelude-val">Some</span>(<span class="ident">Number</span>::<span class="ident">from</span>(<span class="ident">v</span>.<span class="ident">as_i64</span>().<span class="ident">unwrap</span>()))
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">is_u64</span>() {
+                    <span class="prelude-val">Some</span>(<span class="ident">Number</span>::<span class="ident">from</span>(<span class="ident">v</span>.<span class="ident">as_u64</span>().<span class="ident">unwrap</span>()))
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">is_f64</span>() {
+                    <span class="prelude-val">Some</span>(<span class="ident">Number</span>::<span class="ident">from_f64</span>(<span class="ident">v</span>.<span class="ident">as_f64</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>())
+                } <span class="kw">else</span> {
+                    <span class="macro">bail</span><span class="macro">!</span>(
+                        <span class="string">&quot;Function `{}` was used in a math operation but is not returning a number&quot;</span>,
+                        <span class="ident">fn_call</span>.<span class="ident">name</span>,
+                    )
+                }
+            }
             <span class="ident">ExprVal</span>::<span class="ident">String</span>(<span class="kw-2">ref</span> <span class="ident">val</span>) <span class="op">=&gt;</span> <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Tried to do math with a string: `{}`&quot;</span>, <span class="ident">val</span>),
             <span class="ident">ExprVal</span>::<span class="ident">Bool</span>(<span class="ident">val</span>) <span class="op">=&gt;</span> <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Tried to do math with a boolean: `{}`&quot;</span>, <span class="ident">val</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;unimplemented&quot;</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;unimplemented math expression for {:?}&quot;</span>, <span class="ident">expr</span>),
         };
 
         <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
