@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["ConnectorError",""]],"struct":[["ConnectionInfo",""],["Connector",""],["DefaultConnector",""]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["get_shipcat_config",""],["get_shipcat_manifests",""],["watch_for_shipcat_manifest_updates",""]],"struct":[["ManifestCache",""]],"type":[["ManifestMap",""]]});

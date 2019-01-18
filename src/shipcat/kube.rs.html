@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_cli/src/kube.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kube.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_cli/src/kube.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kube.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -512,6 +512,7 @@
 <span id="512">512</span>
 <span id="513">513</span>
 <span id="514">514</span>
+<span id="515">515</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="prelude-ty">Result</span>, <span class="ident">Manifest</span>};
 <span class="kw">use</span> <span class="ident">regex</span>::<span class="ident">Regex</span>;
@@ -537,7 +538,7 @@
         <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;kubectl {} stderr: {}&quot;</span>, <span class="ident">args</span>.<span class="ident">join</span>(<span class="string">&quot; &quot;</span>), <span class="ident">err</span>.<span class="ident">trim</span>());
     }
     <span class="comment">// kubectl keeps returning opening and closing apostrophes - strip them:</span>
-    <span class="kw">if</span> <span class="ident">out</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">2</span> <span class="op">&amp;&amp;</span> <span class="ident">out</span>.<span class="ident">chars</span>().<span class="ident">next</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="string">&#39;\&#39;&#39;</span>) {
+    <span class="kw">if</span> <span class="ident">out</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">2</span> <span class="op">&amp;&amp;</span> <span class="ident">out</span>.<span class="ident">starts_with</span>(<span class="string">&#39;\&#39;&#39;</span>) {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">out</span>.<span class="ident">split</span>(<span class="string">&#39;\&#39;&#39;</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()[<span class="number">1</span>];
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">res</span>.<span class="ident">trim</span>().<span class="ident">into</span>());
     }
@@ -634,7 +635,7 @@
         <span class="string">&quot;pods&quot;</span>.<span class="ident">into</span>(),
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;-l=app={}&quot;</span>, <span class="ident">mf</span>.<span class="ident">name</span>),
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;-n={}&quot;</span>, <span class="ident">mf</span>.<span class="ident">namespace</span>),
-        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;--no-headers&quot;</span>),
+        <span class="string">&quot;--no-headers&quot;</span>.<span class="ident">into</span>(),
     ];
     <span class="kw">let</span> <span class="ident">podres</span> <span class="op">=</span> <span class="ident">kout</span>(<span class="ident">podargs</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bpods</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
@@ -647,7 +648,7 @@
             }
         }
         <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">caps</span>) <span class="op">=</span> <span class="ident">status_re</span>.<span class="ident">captures</span>(<span class="ident">l</span>) {
-            <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">caps</span>[<span class="string">&quot;ready&quot;</span>] <span class="op">!=</span> <span class="kw-2">&amp;</span><span class="ident">caps</span>[<span class="string">&quot;total&quot;</span>] {
+            <span class="kw">if</span> <span class="ident">caps</span>[<span class="string">&quot;ready&quot;</span>] <span class="op">!=</span> <span class="ident">caps</span>[<span class="string">&quot;total&quot;</span>] {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="ident">l</span>.<span class="ident">split</span>(<span class="string">&#39; &#39;</span>).<span class="ident">next</span>() {
                     <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Found pod with less than necessary containers healthy: {}&quot;</span>, <span class="ident">p</span>);
                     <span class="ident">bpods</span>.<span class="ident">push</span>(<span class="ident">p</span>.<span class="ident">into</span>());
@@ -677,7 +678,7 @@
             <span class="ident">pod</span>.<span class="ident">clone</span>(),
             <span class="ident">mf</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;-n={}&quot;</span>, <span class="ident">mf</span>.<span class="ident">namespace</span>),
-            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;--tail=30&quot;</span>).<span class="ident">into</span>(),
+            <span class="string">&quot;--tail=30&quot;</span>.<span class="ident">into</span>(),
         ];
         <span class="kw">match</span> <span class="ident">kout</span>(<span class="ident">logvec</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> {
@@ -938,9 +939,9 @@
 
 <span class="kw">use</span> <span class="ident">shipcat_definitions</span>::<span class="ident">Crd</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Serialize</span>;
-<span class="doccomment">/// Apply the CRD definition for any struct that can be turned into a CRD</span>
+<span class="doccomment">/// Apply the CRD for any struct that can be turned into a CRD</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Manifest and Config typically.</span>
+<span class="doccomment">/// CRDs itself, Manifest and Config typically.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply_crd</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Crd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> <span class="op">+</span> <span class="ident">Serialize</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">data</span>: <span class="ident">T</span>, <span class="ident">ns</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span>;
     <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::{<span class="self">self</span>, <span class="ident">File</span>};
@@ -984,7 +985,7 @@
     <span class="kw">if</span> <span class="ident">out</span> <span class="op">==</span> <span class="string">&quot;&#39;&#39;&quot;</span> { <span class="comment">// stupid kubectl</span>
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="macro">vec</span><span class="macro">!</span>[])
     }
-    <span class="prelude-val">Ok</span>(<span class="ident">out</span>.<span class="ident">split</span>(<span class="string">&quot; &quot;</span>).<span class="ident">map</span>(<span class="ident">String</span>::<span class="ident">from</span>).<span class="ident">collect</span>())
+    <span class="prelude-val">Ok</span>(<span class="ident">out</span>.<span class="ident">split</span>(<span class="string">&#39; &#39;</span>).<span class="ident">map</span>(<span class="ident">String</span>::<span class="ident">from</span>).<span class="ident">collect</span>())
 }
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashSet</span>;
@@ -1023,7 +1024,8 @@
         <span class="comment">// ignoring this test on circleci..</span>
         <span class="kw">if</span> <span class="ident">kubecfg</span>.<span class="ident">is_file</span>() {
             <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">current_context</span>().<span class="ident">unwrap</span>();
-            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;dev-uk&quot;</span>.<span class="ident">to_string</span>());
+            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="ident">ctx</span>.<span class="ident">trim</span>());
+            <span class="macro">assert_ne</span><span class="macro">!</span>(<span class="ident">ctx</span>, <span class="string">&quot;&quot;</span>);
         }
     }
 }

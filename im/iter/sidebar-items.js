@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["unfold","Create an iterator of values using a function to update a state value."],["unfold_mut","Create an iterator of values using a function to mutate a state value."]],"struct":[["Unfold",""],["UnfoldMut",""]]});

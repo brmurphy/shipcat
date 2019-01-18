@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BabylonAuthHeader","Babylon Auth Header plugin data"],["Cors","Cors plugin data"],["Kong","Kong setup for a service"]]});
+initSidebarItems({"enum":[["Authentication",""]],"struct":[["BabylonAuthHeader","Babylon Auth Header plugin data"],["Cors","Cors plugin data"],["Kong","Kong setup for a service"]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["ServerMessage","Server message"]],"struct":[["PauseServer","Pause accepting incoming connections"],["ResumeServer","Resume accepting incoming connections"],["Server","Server"],["StopServer","Stop incoming connection processing, stop all workers and exit."]],"trait":[["ServiceFactory",""],["StreamServiceFactory",""]]});

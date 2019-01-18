@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_cli/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_cli/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -136,67 +136,17 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
 </pre><pre class="rust ">
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;1024&quot;</span>]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">renamed_and_removed_lints</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">rust_2018_idioms</span>)]</span>
 
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_derive</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_yaml</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_json</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_derive</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
 
-<span class="comment">// grafana / slack</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">reqwest</span>;
+<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">error_chain</span>;
 
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">openssl_probe</span>;
-
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">chrono</span>;
-
-<span class="comment">// notifications</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">slack_hook</span>;
-
-<span class="comment">// graphing</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">petgraph</span>;
-
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
-
-<span class="comment">// sanity</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">dirs</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">regex</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">semver</span>;
-
-<span class="comment">// parallel upgrades:</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">threadpool</span>;
-
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">error_chain</span>;
 <span class="macro">error_chain</span><span class="macro">!</span> {
     <span class="ident">types</span> {
         <span class="ident">Error</span>, <span class="ident">ErrorKind</span>, <span class="ident">ResultExt</span>, <span class="prelude-ty">Result</span>;
@@ -259,11 +209,10 @@
     }
 }
 
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">shipcat_definitions</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">shipcat_definitions</span>::{<span class="ident">Manifest</span>, <span class="ident">ConfigType</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">shipcat_definitions</span>::<span class="ident">structs</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">shipcat_definitions</span>::<span class="ident">config</span>::{<span class="self">self</span>, <span class="ident">Config</span>, <span class="ident">Team</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">shipcat_definitions</span>::<span class="ident">region</span>::{<span class="ident">Region</span>, <span class="ident">VersionScheme</span>, <span class="ident">KongConfig</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">shipcat_definitions</span>::<span class="ident">region</span>::{<span class="ident">Region</span>, <span class="ident">VersionScheme</span>, <span class="ident">KongConfig</span>, <span class="ident">Webhook</span>, <span class="ident">AuditWebhook</span>};
 <span class="comment">//pub use shipcat_definitions::Product;</span>
 
 <span class="doccomment">/// Convenience listers</span>
@@ -272,6 +221,8 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">slack</span>;
 <span class="doccomment">/// A REST interface to grafana using `reqwest`</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">grafana</span>;
+<span class="doccomment">/// Audit objects and API caller</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">audit</span>;
 <span class="doccomment">/// Cluster level operations</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cluster</span>;
 
@@ -298,6 +249,9 @@
 
 <span class="doccomment">/// Various simple reducers</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">get</span>;
+
+<span class="doccomment">/// Webhook mux/demux</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">webhooks</span>;
 
 <span class="doccomment">/// Simple printers</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">show</span>;

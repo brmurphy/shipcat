@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["APIClient","APIClient requires `config::Configuration` includes client to connect with kubernetes cluster."],["ApiError","Error data returned by kube"]]});

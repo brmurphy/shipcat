@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_definitions/src/structs/kongfig.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kongfig.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_definitions/src/structs/kongfig.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kongfig.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -504,37 +504,10 @@
 <span id="504">504</span>
 <span id="505">505</span>
 <span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
-<span id="517">517</span>
-<span id="518">518</span>
-<span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
-<span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
 </pre><pre class="rust ">
 <span class="comment">//use super::traits::Verify;</span>
-<span class="kw">use</span> <span class="ident">structs</span>::{<span class="ident">Kong</span>, <span class="ident">Cors</span>, <span class="ident">BabylonAuthHeader</span>};
-<span class="kw">use</span> <span class="ident">region</span>::{<span class="ident">KongConfig</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">structs</span>::{<span class="ident">Kong</span>, <span class="ident">Cors</span>, <span class="ident">BabylonAuthHeader</span>, <span class="ident">Authentication</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">region</span>::{<span class="ident">KongConfig</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">BTreeMap</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">ser</span>::{<span class="ident">Serialize</span>, <span class="ident">Serializer</span>, <span class="ident">SerializeMap</span>};
 
@@ -571,7 +544,7 @@
 <span class="doccomment">/// Plugins and their configs</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CorsPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CorsPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">methods</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">exposed_headers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">max_age</span>: <span class="ident">u32</span>,
@@ -580,26 +553,17 @@
     <span class="kw">pub</span> <span class="ident">credentials</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">preflight_continue</span>: <span class="ident">bool</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CorsPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">CorsPluginAttributesConfig</span>,
-}
 
-<span class="kw">impl</span> <span class="ident">CorsPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">CorsPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">cors</span>: <span class="ident">Cors</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">CorsPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="ident">cors</span>.<span class="ident">enabled</span>,
-            <span class="ident">config</span>: <span class="ident">CorsPluginAttributesConfig</span> {
-                <span class="ident">credentials</span>: <span class="ident">cors</span>.<span class="ident">credentials</span>,
-                <span class="ident">exposed_headers</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">exposed_headers</span>),
-                <span class="ident">max_age</span>: <span class="ident">cors</span>.<span class="ident">max_age</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>(),
-                <span class="ident">methods</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">methods</span>),
-                <span class="ident">origins</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">origin</span>),
-                <span class="ident">headers</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">headers</span>),
-                <span class="ident">preflight_continue</span>: <span class="ident">cors</span>.<span class="ident">preflight_continue</span>
-            }
+        <span class="ident">CorsPluginConfig</span> {
+            <span class="ident">credentials</span>: <span class="ident">cors</span>.<span class="ident">credentials</span>,
+            <span class="ident">exposed_headers</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">exposed_headers</span>),
+            <span class="ident">max_age</span>: <span class="ident">cors</span>.<span class="ident">max_age</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>(),
+            <span class="ident">methods</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">methods</span>),
+            <span class="ident">origins</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">origin</span>),
+            <span class="ident">headers</span>: <span class="ident">splitter</span>(<span class="ident">cors</span>.<span class="ident">headers</span>),
+            <span class="ident">preflight_continue</span>: <span class="ident">cors</span>.<span class="ident">preflight_continue</span>
         }
     }
 }
@@ -626,73 +590,54 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResponseTransformerPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResponseTransformerPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">add</span>: <span class="ident">HeadersAndJson</span>,
     <span class="kw">pub</span> <span class="ident">append</span>: <span class="ident">HeadersAndJson</span>,
     <span class="kw">pub</span> <span class="ident">remove</span>: <span class="ident">HeadersAndJson</span>,
     <span class="kw">pub</span> <span class="ident">replace</span>: <span class="ident">HeadersAndJson</span>,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResponseTransformerPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">ResponseTransformerPluginAttributesConfig</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">ResponseTransformerPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">ResponseTransformerPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">headers</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">headers_strs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">headers</span> {
             <span class="ident">headers_strs</span>.<span class="ident">push</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}: {}&quot;</span>, <span class="ident">k</span>, <span class="ident">v</span>));
         }
-        <span class="ident">ResponseTransformerPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">ResponseTransformerPluginAttributesConfig</span> {
-                <span class="ident">add</span>: <span class="ident">HeadersAndJson</span> {
-                    <span class="ident">headers</span>: <span class="prelude-val">Some</span>(<span class="ident">headers_strs</span>),
-                    <span class="ident">json</span>: <span class="prelude-val">None</span>
-                },
-                <span class="ident">append</span>: <span class="ident">HeadersAndJson</span>::<span class="ident">default</span>(),
-                <span class="ident">remove</span>: <span class="ident">HeadersAndJson</span>::<span class="ident">default</span>(),
-                <span class="ident">replace</span>: <span class="ident">HeadersAndJson</span>::<span class="ident">default</span>(),
-            }
+        <span class="ident">ResponseTransformerPluginConfig</span> {
+            <span class="ident">add</span>: <span class="ident">HeadersAndJson</span> {
+                <span class="ident">headers</span>: <span class="prelude-val">Some</span>(<span class="ident">headers_strs</span>),
+                <span class="ident">json</span>: <span class="prelude-val">None</span>
+            },
+            <span class="ident">append</span>: <span class="ident">HeadersAndJson</span>::<span class="ident">default</span>(),
+            <span class="ident">remove</span>: <span class="ident">HeadersAndJson</span>::<span class="ident">default</span>(),
+            <span class="ident">replace</span>: <span class="ident">HeadersAndJson</span>::<span class="ident">default</span>(),
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TcpLogPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TcpLogPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">host</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">port</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">keepalive</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">timeout</span>: <span class="ident">u32</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TcpLogPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">TcpLogPluginAttributesConfig</span>,
-}
 
-<span class="kw">impl</span> <span class="ident">TcpLogPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">TcpLogPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">host</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">port</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">TcpLogPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">TcpLogPluginAttributesConfig</span> {
-                <span class="ident">host</span>: <span class="ident">host</span>.<span class="ident">into</span>(),
-                <span class="ident">port</span>: <span class="ident">port</span>.<span class="ident">into</span>(),
-                <span class="ident">keepalive</span>: <span class="number">60000</span>,
-                <span class="ident">timeout</span>: <span class="number">10000</span>,
-            }
+        <span class="ident">TcpLogPluginConfig</span> {
+            <span class="ident">host</span>: <span class="ident">host</span>.<span class="ident">into</span>(),
+            <span class="ident">port</span>: <span class="ident">port</span>.<span class="ident">into</span>(),
+            <span class="ident">keepalive</span>: <span class="number">60000</span>,
+            <span class="ident">timeout</span>: <span class="number">10000</span>,
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Oauth2PluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Oauth2PluginConfig</span> {
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">anonymous_username</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">enable_client_credentials</span>: <span class="ident">bool</span>,
@@ -708,204 +653,181 @@
     <span class="kw">pub</span> <span class="ident">token_expiration</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">accept_http_if_already_terminated</span>: <span class="ident">bool</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Oauth2PluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">Oauth2PluginAttributesConfig</span>,
-}
 
-<span class="kw">impl</span> <span class="ident">Oauth2PluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">Oauth2PluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kong_token_expiration</span>: <span class="ident">u32</span>, <span class="ident">oauth_provision_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">anonymous_consumer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">Oauth2PluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">Oauth2PluginAttributesConfig</span> {
-                <span class="ident">anonymous</span>: <span class="kw">match</span> <span class="ident">anonymous_consumer</span>.<span class="ident">clone</span>() {
-                    <span class="prelude-val">Some</span>(<span class="ident">_s</span>) <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
-                    <span class="prelude-val">None</span>     <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;&quot;</span>.<span class="ident">into</span>()),
-                },
-                <span class="ident">anonymous_username</span>: <span class="ident">anonymous_consumer</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;anonymous&quot;</span>.<span class="ident">into</span>()),
-                <span class="ident">global_credentials</span>: <span class="bool-val">true</span>,
-                <span class="ident">provision_key</span>: <span class="ident">oauth_provision_key</span>.<span class="ident">into</span>(),
-                <span class="ident">enable_password_grant</span>: <span class="bool-val">true</span>,
-                <span class="ident">enable_authorization_code</span>: <span class="bool-val">true</span>,
-                <span class="ident">token_expiration</span>: <span class="ident">kong_token_expiration</span>,
-                ..<span class="ident">Oauth2PluginAttributesConfig</span>::<span class="ident">default</span>()
-            }
+        <span class="ident">Oauth2PluginConfig</span> {
+            <span class="ident">anonymous</span>: <span class="kw">match</span> <span class="ident">anonymous_consumer</span>.<span class="ident">clone</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">_s</span>) <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+                <span class="prelude-val">None</span>     <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;&quot;</span>.<span class="ident">into</span>()),
+            },
+            <span class="ident">anonymous_username</span>: <span class="ident">anonymous_consumer</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;anonymous&quot;</span>.<span class="ident">into</span>()),
+            <span class="ident">global_credentials</span>: <span class="bool-val">true</span>,
+            <span class="ident">provision_key</span>: <span class="ident">oauth_provision_key</span>.<span class="ident">into</span>(),
+            <span class="ident">enable_password_grant</span>: <span class="bool-val">true</span>,
+            <span class="ident">enable_authorization_code</span>: <span class="bool-val">true</span>,
+            <span class="ident">token_expiration</span>: <span class="ident">kong_token_expiration</span>,
+            ..<span class="ident">Oauth2PluginConfig</span>::<span class="ident">default</span>()
         }
     }
 }
-
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Oauth2ExtensionPluginAttributesConfig</span> {}
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Oauth2ExtensionPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">Oauth2ExtensionPluginAttributesConfig</span>,
-}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Oauth2ExtensionPluginConfig</span> {}
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Oauth2ExtensionPluginAttributes</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">Oauth2ExtensionPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">Oauth2ExtensionPluginAttributesConfig</span>::<span class="ident">default</span>()
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JwtPluginConfig</span> {
+    <span class="kw">pub</span> <span class="ident">uri_param_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">claims_to_verify</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">anonymous_username</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>, <span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">anonymous</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+}
+<span class="kw">impl</span> <span class="ident">JwtPluginConfig</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">anonymous_consumer</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">JwtPluginConfig</span> {
+            <span class="ident">uri_param_names</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">claims_to_verify</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;exp&quot;</span>.<span class="ident">into</span>()],
+
+            <span class="ident">anonymous</span>: <span class="kw">match</span> <span class="ident">anonymous_consumer</span>.<span class="ident">clone</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">_s</span>) <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+                <span class="prelude-val">None</span>     <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;&quot;</span>.<span class="ident">into</span>()),
+            },
+            <span class="ident">anonymous_username</span>: <span class="ident">anonymous_consumer</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;anonymous&quot;</span>.<span class="ident">into</span>()),
         }
     }
 }
 
-
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JsonCookiesCsrfPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JsonCookiesCsrfPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">csrf_field_name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">cookie_name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">strict</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">csrf_header_name</span>: <span class="ident">String</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JsonCookiesCsrfPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">JsonCookiesCsrfPluginAttributesConfig</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">JsonCookiesCsrfPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">JsonCookiesCsrfPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">JsonCookiesCsrfPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">JsonCookiesCsrfPluginAttributesConfig</span> {
-                <span class="ident">cookie_name</span>: <span class="string">&quot;autologin_info&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">csrf_field_name</span>: <span class="string">&quot;csrf_token&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">csrf_header_name</span>: <span class="string">&quot;x-security-token&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">strict</span>: <span class="bool-val">true</span>,
-            }
+        <span class="ident">JsonCookiesCsrfPluginConfig</span> {
+            <span class="ident">cookie_name</span>: <span class="string">&quot;autologin_info&quot;</span>.<span class="ident">into</span>(),
+            <span class="ident">csrf_field_name</span>: <span class="string">&quot;csrf_token&quot;</span>.<span class="ident">into</span>(),
+            <span class="ident">csrf_header_name</span>: <span class="string">&quot;x-security-token&quot;</span>.<span class="ident">into</span>(),
+            <span class="ident">strict</span>: <span class="bool-val">true</span>,
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JsonCookiesToHeadersPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JsonCookiesToHeadersPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">field_name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">cookie_name</span>: <span class="ident">String</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JsonCookiesToHeadersPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">JsonCookiesToHeadersPluginAttributesConfig</span>,
-}
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">JsonCookiesToHeadersPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">JsonCookiesToHeadersPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">JsonCookiesToHeadersPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">JsonCookiesToHeadersPluginAttributesConfig</span> {
-                <span class="ident">field_name</span>: <span class="string">&quot;kong_token&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">cookie_name</span>: <span class="string">&quot;autologin_token&quot;</span>.<span class="ident">into</span>(),
-            }
+        <span class="ident">JsonCookiesToHeadersPluginConfig</span> {
+            <span class="ident">field_name</span>: <span class="string">&quot;kong_token&quot;</span>.<span class="ident">into</span>(),
+            <span class="ident">cookie_name</span>: <span class="string">&quot;autologin_token&quot;</span>.<span class="ident">into</span>(),
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BabylonAuthHeaderPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BabylonAuthHeaderPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">auth_service</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">cache_timeout_sec</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">http_timeout_msec</span>: <span class="ident">u32</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BabylonAuthHeaderPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">BabylonAuthHeaderPluginAttributesConfig</span>,
-}
 
-<span class="kw">impl</span> <span class="ident">BabylonAuthHeaderPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">BabylonAuthHeaderPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">authheader</span>: <span class="ident">BabylonAuthHeader</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">BabylonAuthHeaderPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="ident">authheader</span>.<span class="ident">enabled</span>,
-            <span class="ident">config</span>: <span class="ident">BabylonAuthHeaderPluginAttributesConfig</span> {
-                <span class="ident">auth_service</span>: <span class="ident">authheader</span>.<span class="ident">auth_service</span>,
-                <span class="ident">cache_timeout_sec</span>: <span class="ident">authheader</span>.<span class="ident">cache_timeout_sec</span>,
-                <span class="ident">http_timeout_msec</span>: <span class="ident">authheader</span>.<span class="ident">http_timeout_msec</span>,
-            }
+        <span class="ident">BabylonAuthHeaderPluginConfig</span> {
+            <span class="ident">auth_service</span>: <span class="ident">authheader</span>.<span class="ident">auth_service</span>,
+            <span class="ident">cache_timeout_sec</span>: <span class="ident">authheader</span>.<span class="ident">cache_timeout_sec</span>,
+            <span class="ident">http_timeout_msec</span>: <span class="ident">authheader</span>.<span class="ident">http_timeout_msec</span>,
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CorrelationIdPluginAttributesConfig</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CorrelationIdPluginConfig</span> {
     <span class="kw">pub</span> <span class="ident">echo_downstream</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">header_name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">generator</span>: <span class="ident">String</span>,
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CorrelationIdPluginAttributes</span> {
-    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">CorrelationIdPluginAttributesConfig</span>,
-}
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">CorrelationIdPluginAttributes</span> {
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">CorrelationIdPluginConfig</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">CorrelationIdPluginAttributes</span> {
-            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
-            <span class="ident">config</span>: <span class="ident">CorrelationIdPluginAttributesConfig</span> {
-                <span class="ident">echo_downstream</span>: <span class="bool-val">true</span>,
-                <span class="ident">header_name</span>: <span class="string">&quot;babylon-request-id&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">generator</span>: <span class="string">&quot;uuid&quot;</span>.<span class="ident">into</span>(),
-            }
+        <span class="ident">CorrelationIdPluginConfig</span> {
+            <span class="ident">echo_downstream</span>: <span class="bool-val">true</span>,
+            <span class="ident">header_name</span>: <span class="string">&quot;babylon-request-id&quot;</span>.<span class="ident">into</span>(),
+            <span class="ident">generator</span>: <span class="string">&quot;uuid&quot;</span>.<span class="ident">into</span>(),
         }
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;name&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;name&quot;</span>, <span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ApiPlugin</span> {
-    <span class="ident">TcpLog</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">TcpLogPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">Oauth2</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">Oauth2PluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">Oauth2Extension</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">Oauth2ExtensionPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">Cors</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">CorsPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">CorrelationId</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">CorrelationIdPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">BabylonAuthHeader</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">BabylonAuthHeaderPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">JsonCookiesToHeaders</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">JsonCookiesToHeadersPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">JsonCookiesCsrf</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">JsonCookiesCsrfPluginAttributes</span><span class="op">&gt;</span>),
-    <span class="ident">ResponseTransformer</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">ResponseTransformerPluginAttributes</span><span class="op">&gt;</span>),
+    <span class="ident">TcpLog</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">TcpLogPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">Oauth2</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">Oauth2PluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">Oauth2Extension</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">Oauth2ExtensionPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">Jwt</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">JwtPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">Cors</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">CorsPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">CorrelationId</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">CorrelationIdPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">BabylonAuthHeader</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">BabylonAuthHeaderPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">JsonCookiesToHeaders</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">JsonCookiesToHeadersPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">JsonCookiesCsrf</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">JsonCookiesCsrfPluginConfig</span><span class="op">&gt;</span>),
+    <span class="ident">ResponseTransformer</span>(<span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">ResponseTransformerPluginConfig</span><span class="op">&gt;</span>),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Ensure::is_present&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">ensure</span>: <span class="ident">Ensure</span>,
-    <span class="kw">pub</span> <span class="ident">attributes</span>: <span class="ident">T</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;lowercase&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Ensure</span> {
-    <span class="ident">Present</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;ensure&quot;</span>, <span class="ident">content</span> <span class="op">=</span> <span class="string">&quot;attributes&quot;</span>, <span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;lowercase&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">Present</span>(<span class="ident">PluginAttributes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
     <span class="ident">Removed</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Ensure</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> { <span class="ident">Ensure</span>::<span class="ident">Present</span> }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Default</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> { <span class="ident">PluginBase</span>::<span class="ident">new</span>(<span class="ident">T</span>::<span class="ident">default</span>()) }
 }
 
-<span class="kw">impl</span> <span class="ident">Ensure</span> {
-    <span class="kw">fn</span> <span class="ident">is_present</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">Ensure</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="ident">x</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">Ensure</span>::<span class="ident">Present</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">PluginBase</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">config</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">PluginBase</span>::<span class="ident">Present</span>(<span class="ident">PluginAttributes</span> {
+            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
+            <span class="ident">config</span>: <span class="ident">config</span>,
+        })
+    }
+    <span class="kw">fn</span> <span class="ident">removed</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">PluginBase</span>::<span class="ident">Removed</span>
+    }
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PluginAttributes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="ident">enabled</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">config</span>: <span class="ident">T</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Default</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">PluginAttributes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="ident">PluginAttributes</span> {
+            <span class="ident">enabled</span>: <span class="bool-val">true</span>,
+            <span class="ident">config</span>: <span class="ident">T</span>::<span class="ident">default</span>()
+        }
     }
 }
 
 <span class="kw">fn</span> <span class="ident">splitter</span>(<span class="ident">value</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="ident">value</span>.<span class="ident">split</span>(<span class="string">&quot;,&quot;</span>)
+    <span class="ident">value</span>.<span class="ident">split</span>(<span class="string">&#39;,&#39;</span>)
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">trim</span>())
         .<span class="ident">map</span>(<span class="ident">String</span>::<span class="ident">from</span>)
         .<span class="ident">collect</span>()
@@ -919,66 +841,73 @@
         <span class="comment">// Prepare plugins</span>
 
         <span class="comment">// Always: CorrelationId</span>
-        <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">CorrelationId</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">CorrelationIdPluginAttributes</span><span class="op">&gt;</span>::<span class="ident">default</span>()));
+        <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">CorrelationId</span>(<span class="ident">PluginBase</span>::<span class="ident">default</span>()));
 
         <span class="comment">// If globally enabled: TCP Logging</span>
         <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">tcp_log</span>.<span class="ident">enabled</span> {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">TcpLog</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">TcpLogPluginAttributes</span><span class="op">&gt;</span> {
-                <span class="ident">ensure</span>: <span class="ident">Ensure</span>::<span class="ident">default</span>(),
-                <span class="ident">attributes</span>: <span class="ident">TcpLogPluginAttributes</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">tcp_log</span>.<span class="ident">host</span>, <span class="ident">config</span>.<span class="ident">tcp_log</span>.<span class="ident">port</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>())
-            }));
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">TcpLog</span>(<span class="ident">PluginBase</span>::<span class="ident">new</span>(
+                <span class="ident">TcpLogPluginConfig</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">tcp_log</span>.<span class="ident">host</span>, <span class="ident">config</span>.<span class="ident">tcp_log</span>.<span class="ident">port</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>()),
+            )));
         }
 
-        <span class="comment">// If enabled: Oauth2 and extension</span>
-        <span class="kw">let</span> <span class="ident">en</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">auth</span>.<span class="ident">unwrap_or</span>(<span class="string">&quot;&quot;</span>.<span class="ident">into</span>()) <span class="op">!=</span> <span class="string">&quot;none&quot;</span> {
-            <span class="ident">Ensure</span>::<span class="ident">default</span>()
-        } <span class="kw">else</span> {
-            <span class="ident">Ensure</span>::<span class="ident">Removed</span>
-        };
-
-        <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Oauth2</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">Oauth2PluginAttributes</span><span class="op">&gt;</span> {
-            <span class="ident">ensure</span>: <span class="ident">en</span>,
-            <span class="ident">attributes</span>: <span class="ident">Oauth2PluginAttributes</span>::<span class="ident">new</span>(
+        <span class="comment">// OAuth2 plugins</span>
+        <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">v</span>.<span class="ident">auth</span> {
+            <span class="ident">Authentication</span>::<span class="ident">OAuth2</span> <span class="op">=&gt;</span> <span class="ident">PluginBase</span>::<span class="ident">new</span>(<span class="ident">Oauth2PluginConfig</span>::<span class="ident">new</span>(
                 <span class="ident">config</span>.<span class="ident">kong_token_expiration</span>,
                 <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">oauth_provision_key</span>,
-                <span class="ident">v</span>.<span class="ident">oauth2_anonymous</span>)
-        }));
+                <span class="ident">v</span>.<span class="ident">oauth2_anonymous</span>.<span class="ident">clone</span>())),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">PluginBase</span>::<span class="ident">removed</span>(),
+        };
+        <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Oauth2</span>(<span class="ident">plugin</span>));
 
-        <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">oauth2_extension_plugin</span>.<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>) {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Oauth2Extension</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">Oauth2ExtensionPluginAttributes</span><span class="op">&gt;</span>::<span class="ident">default</span>()));
+        <span class="comment">// JWT plugin</span>
+        <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">v</span>.<span class="ident">auth</span> {
+            <span class="ident">Authentication</span>::<span class="ident">Jwt</span> <span class="op">=&gt;</span> <span class="ident">PluginBase</span>::<span class="ident">new</span>(<span class="ident">JwtPluginConfig</span>::<span class="ident">new</span>(
+                <span class="ident">v</span>.<span class="ident">oauth2_anonymous</span>.<span class="ident">clone</span>(),
+            )),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">PluginBase</span>::<span class="ident">removed</span>(),
+        };
+        <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Jwt</span>(<span class="ident">plugin</span>));
+
+        <span class="comment">// OAuth2 extension plugin</span>
+        <span class="comment">// TODO: Remove plugin if not Some(false)/None</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) <span class="op">=</span> <span class="ident">v</span>.<span class="ident">oauth2_extension_plugin</span> {
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Oauth2Extension</span>(<span class="ident">PluginBase</span>::<span class="ident">default</span>()));
         }
 
-        <span class="comment">// If enabled: babylon-auth-header</span>
+        <span class="comment">// Babylon Auth Header plugin</span>
+        <span class="comment">// TODO: Remove plugin if not enabled/None</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">babylon_auth_header</span>) <span class="op">=</span> <span class="ident">v</span>.<span class="ident">babylon_auth_header</span> {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">BabylonAuthHeader</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">BabylonAuthHeaderPluginAttributes</span><span class="op">&gt;</span> {
-                <span class="ident">ensure</span>: <span class="ident">Ensure</span>::<span class="ident">default</span>(),
-                <span class="ident">attributes</span>: <span class="ident">BabylonAuthHeaderPluginAttributes</span>::<span class="ident">new</span>(<span class="ident">babylon_auth_header</span>)
-            }));
+            <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="ident">PluginBase</span>::<span class="ident">Present</span>(<span class="ident">PluginAttributes</span> {
+                <span class="ident">enabled</span>: <span class="ident">babylon_auth_header</span>.<span class="ident">enabled</span>,
+                <span class="ident">config</span>: <span class="ident">BabylonAuthHeaderPluginConfig</span>::<span class="ident">new</span>(<span class="ident">babylon_auth_header</span>),
+            });
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">BabylonAuthHeader</span>(<span class="ident">plugin</span>));
         }
 
         <span class="comment">// If enabled: CORS</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cors</span>) <span class="op">=</span> <span class="ident">v</span>.<span class="ident">cors</span> {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Cors</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">CorsPluginAttributes</span><span class="op">&gt;</span> {
-                <span class="ident">ensure</span>: <span class="ident">Ensure</span>::<span class="ident">default</span>(),
-                <span class="ident">attributes</span>: <span class="ident">CorsPluginAttributes</span>::<span class="ident">new</span>(<span class="ident">cors</span>)
-            }));
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">Cors</span>(<span class="ident">PluginBase</span>::<span class="ident">Present</span>(<span class="ident">PluginAttributes</span> {
+                <span class="comment">// TODO: Remove plugin if not enabled/None</span>
+                <span class="ident">enabled</span>: <span class="ident">cors</span>.<span class="ident">enabled</span>,
+                <span class="ident">config</span>: <span class="ident">CorsPluginConfig</span>::<span class="ident">new</span>(<span class="ident">cors</span>),
+            })));
         }
 
         <span class="comment">// If enabled: ResponseTransformer to add headers</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">add_headers</span>) <span class="op">=</span> <span class="ident">v</span>.<span class="ident">add_headers</span> {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">ResponseTransformer</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">ResponseTransformerPluginAttributes</span><span class="op">&gt;</span> {
-                <span class="ident">ensure</span>: <span class="ident">Ensure</span>::<span class="ident">default</span>(),
-                <span class="ident">attributes</span>: <span class="ident">ResponseTransformerPluginAttributes</span>::<span class="ident">new</span>(<span class="ident">add_headers</span>)
-            }));
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">ResponseTransformer</span>(<span class="ident">PluginBase</span>::<span class="ident">new</span>(
+                <span class="ident">ResponseTransformerPluginConfig</span>::<span class="ident">new</span>(<span class="ident">add_headers</span>),
+            )));
         }
 
         <span class="comment">// If enabled: JsonCookies and JsonCookiesCsrf</span>
         <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">cookie_auth</span> {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">JsonCookiesToHeaders</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">JsonCookiesToHeadersPluginAttributes</span><span class="op">&gt;</span>::<span class="ident">default</span>()));
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">JsonCookiesToHeaders</span>(<span class="ident">PluginBase</span>::<span class="ident">default</span>()));
         }
 
         <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">cookie_auth_csrf</span> {
-            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">JsonCookiesCsrf</span>(<span class="ident">PluginBase</span>::<span class="op">&lt;</span><span class="ident">JsonCookiesCsrfPluginAttributes</span><span class="op">&gt;</span>::<span class="ident">default</span>()));
+            <span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">ApiPlugin</span>::<span class="ident">JsonCookiesCsrf</span>(<span class="ident">PluginBase</span>::<span class="ident">default</span>()));
         }
 
         <span class="comment">// Create the main API object</span>
@@ -1006,17 +935,26 @@
         <span class="ident">Consumer</span> {
             <span class="ident">username</span>: <span class="ident">k</span>.<span class="ident">to_string</span>(),
             <span class="ident">acls</span>: <span class="macro">vec</span><span class="macro">!</span>[],
-            <span class="ident">credentials</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ConsumerCredentials</span> {
-                <span class="ident">name</span>: <span class="string">&quot;oauth2&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">attributes</span>: <span class="ident">ConsumerCredentialsAttributes</span> {
-                    <span class="ident">name</span>: <span class="ident">v</span>.<span class="ident">username</span>.<span class="ident">into</span>(),
-                    <span class="ident">client_id</span>: <span class="ident">v</span>.<span class="ident">oauth_client_id</span>.<span class="ident">into</span>(),
-                    <span class="ident">client_secret</span>: <span class="ident">v</span>.<span class="ident">oauth_client_secret</span>.<span class="ident">into</span>(),
-                    <span class="ident">redirect_uri</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;http://example.com/unused&quot;</span>.<span class="ident">into</span>()]
-                }
-            }],
+            <span class="ident">credentials</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ConsumerCredentials</span>::<span class="ident">OAuth2</span>(<span class="ident">OAuth2CredentialsAttributes</span> {
+                <span class="ident">name</span>: <span class="ident">v</span>.<span class="ident">username</span>,
+                <span class="ident">client_id</span>: <span class="ident">v</span>.<span class="ident">oauth_client_id</span>,
+                <span class="ident">client_secret</span>: <span class="ident">v</span>.<span class="ident">oauth_client_secret</span>,
+                <span class="ident">redirect_uri</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;http://example.com/unused&quot;</span>.<span class="ident">into</span>()]
+            })],
         }
     }).<span class="ident">collect</span>();
+
+    <span class="ident">k</span>.<span class="ident">jwt_consumers</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>,<span class="ident">v</span>)<span class="op">|</span> {
+        <span class="ident">Consumer</span> {
+            <span class="ident">username</span>: <span class="ident">k</span>.<span class="ident">to_string</span>(),
+            <span class="ident">acls</span>: <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">credentials</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">ConsumerCredentials</span>::<span class="ident">Jwt</span>(<span class="ident">JwtCredentialsAttributes</span> {
+                <span class="ident">key</span>: <span class="ident">v</span>.<span class="ident">issuer</span>,
+                <span class="ident">algorithm</span>: <span class="string">&quot;RS256&quot;</span>.<span class="ident">into</span>(),
+                <span class="ident">rsa_public_key</span>: <span class="ident">v</span>.<span class="ident">public_key</span>,
+            })]
+        }
+    }).<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">consumers</span>.<span class="ident">push</span>(<span class="ident">c</span>));
 
     <span class="comment">// Add the anonymous customer as well</span>
     <span class="ident">consumers</span>.<span class="ident">push</span>(<span class="ident">Consumer</span> {
@@ -1037,21 +975,29 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
-<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConsumerCredentials</span> {
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
-    <span class="kw">pub</span> <span class="ident">attributes</span>: <span class="ident">ConsumerCredentialsAttributes</span>,
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">tag</span> <span class="op">=</span> <span class="string">&quot;name&quot;</span>, <span class="ident">content</span> <span class="op">=</span> <span class="string">&quot;attributes&quot;</span>, <span class="ident">rename_all</span><span class="op">=</span><span class="string">&quot;kebab-case&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConsumerCredentials</span> {
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;oauth2&quot;</span>)]</span>
+    <span class="ident">OAuth2</span>(<span class="ident">OAuth2CredentialsAttributes</span>),
+    <span class="ident">Jwt</span>(<span class="ident">JwtCredentialsAttributes</span>),
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConsumerCredentialsAttributes</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OAuth2CredentialsAttributes</span> {
     <span class="kw">pub</span> <span class="ident">client_id</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">redirect_uri</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">client_secret</span>: <span class="ident">String</span>,
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deny_unknown_fields</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JwtCredentialsAttributes</span> {
+    <span class="kw">pub</span> <span class="ident">algorithm</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">key</span>: <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">rsa_public_key</span>: <span class="ident">String</span>,
+}
 
 <span class="doccomment">/// Not used yet</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>

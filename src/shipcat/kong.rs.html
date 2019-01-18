@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_cli/src/kong.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kong.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `shipcat_cli/src/kong.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>kong.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -126,14 +126,14 @@
 
 <span class="doccomment">/// KongOutput matches the format expected by the Kong Configurator script</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>)]</span>
-<span class="kw">struct</span> <span class="ident">KongOutput</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KongOutput</span> {
     <span class="kw">pub</span> <span class="ident">apis</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Kong</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">kong</span>: <span class="ident">KongConfig</span>,
 }
 
 <span class="doccomment">/// KongOutput for Kongfig</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">struct</span> <span class="ident">KongfigOutput</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KongfigOutput</span> {
     <span class="kw">pub</span> <span class="ident">host</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">headers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">apis</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Api</span><span class="op">&gt;</span>,
@@ -144,9 +144,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">KongfigOutput</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">data</span>: <span class="ident">KongOutput</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">data</span>: <span class="ident">KongOutput</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="ident">KongfigOutput</span> {
-            <span class="ident">host</span>: <span class="ident">data</span>.<span class="ident">kong</span>.<span class="ident">clone</span>().<span class="ident">config_url</span>.<span class="ident">into</span>(),
+            <span class="ident">host</span>: <span class="ident">data</span>.<span class="ident">kong</span>.<span class="ident">clone</span>().<span class="ident">config_url</span>,
             <span class="ident">headers</span>: <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="ident">apis</span>: <span class="ident">kongfig_apis</span>(<span class="ident">data</span>.<span class="ident">apis</span>, <span class="ident">data</span>.<span class="ident">kong</span>.<span class="ident">clone</span>()),
             <span class="ident">consumers</span>: <span class="ident">kongfig_consumers</span>(<span class="ident">data</span>.<span class="ident">kong</span>.<span class="ident">clone</span>()),
@@ -182,7 +182,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">generate_kong_output</span>(<span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">KongOutput</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generate_kong_output</span>(<span class="ident">conf</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="ident">region</span>: <span class="kw-2">&amp;</span><span class="ident">Region</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">KongOutput</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">apis</span> <span class="op">=</span> <span class="ident">BTreeMap</span>::<span class="ident">new</span>();
 
     <span class="comment">// Generate list of APIs to feed to Kong</span>

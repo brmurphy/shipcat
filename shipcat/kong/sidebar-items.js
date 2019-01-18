@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["KongOutputMode",""]],"fn":[["config_url","Return the config_url for the given region"],["output","Generate Kong config from a filled in global config"]]});
+initSidebarItems({"enum":[["KongOutputMode",""]],"fn":[["config_url","Return the config_url for the given region"],["generate_kong_output",""],["output","Generate Kong config from a filled in global config"]],"struct":[["KongOutput","KongOutput matches the format expected by the Kong Configurator script"],["KongfigOutput","KongOutput for Kongfig"]]});
