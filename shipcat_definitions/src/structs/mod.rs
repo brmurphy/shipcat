@@ -26,6 +26,10 @@ pub use self::kongfig::{Api, Consumer, Plugin, Upstream, Certificate};
 /// Kafka configs
 pub mod kafka;
 pub use self::kafka::Kafka;
+///
+/// Gate configs
+pub mod gate;
+pub use self::gate::Gate;
 
 // Kubernetes - first are abstractions latter ones are straight translations
 

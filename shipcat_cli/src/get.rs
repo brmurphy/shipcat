@@ -126,6 +126,8 @@ struct APIServiceParams {
     uris: String,
     internal: bool,
     publiclyAccessible: bool,
+    public: bool,
+    websockets: bool,
 }
 #[derive(Serialize)]
 struct EnvironmentInfo {
@@ -154,6 +156,8 @@ pub fn apistatus(conf: &Config, reg: &Region) -> Result<()> {
                 hosts: k.hosts.unwrap_or("".into()),
                 internal: k.internal,
                 publiclyAccessible: mf.publiclyAccessible,
+                public: true,
+                websockets: true,
             });
         }
     }
@@ -165,6 +169,8 @@ pub fn apistatus(conf: &Config, reg: &Region) -> Result<()> {
             hosts: api.hosts.unwrap_or("".into()),
             internal: api.internal,
             publiclyAccessible: api.publiclyAccessible,
+            public: api.publiclyAccessible,
+            websockets: false,
         });
     }
 

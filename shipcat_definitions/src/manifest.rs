@@ -16,7 +16,7 @@ use super::structs::{Metadata, VaultOpts, Dependency};
 use super::structs::security::DataHandling;
 use super::structs::Probe;
 use super::structs::{CronJob, Sidecar, EnvVars};
-use super::structs::{Kafka, Kong, Rbac};
+use super::structs::{Gate, Kafka, Kong, Rbac};
 use super::structs::RollingUpdate;
 use super::structs::autoscaling::AutoScaling;
 use super::structs::tolerations::Tolerations;
@@ -634,6 +634,9 @@ pub struct Manifest {
     /// Hosts to override kong hosts
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub hosts: Vec<String>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gate: Option<Gate>,
 
     /// Kafka config
     ///
