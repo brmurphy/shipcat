@@ -154,7 +154,7 @@ pub struct StatuscakeConfig {
 }
 
 /// Logz.io configuration for a region
-#[derive(Serialize, Deserialize, Clone, Default)] // TODO: better Default impl
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct LogzIoConfig {
     /// Base URL to use (e.g. https://app-eu.logz.io/#/dashboard/kibana/dashboard)
@@ -164,13 +164,51 @@ pub struct LogzIoConfig {
 }
 
 /// Grafana details for a region
-#[derive(Serialize, Deserialize, Clone, Default)] // TODO: better Default impl
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct GrafanaConfig {
     /// Base URL to use (e.g. https://dev-grafana.ops.babylontech.co.uk)
     pub url: String,
     /// Services Dashboard ID (e.g. oHzT4g0iz)
     pub services_dashboard_id: String,
+}
+
+/// Cloudfront details for a region
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(deny_unknown_fields)]
+pub struct CloudfrontConfig {
+    /// Secret header value from cloudfront that we can verify in gate
+    ///
+    /// Used to verify that services do not bypass cloudfront
+    pub secret_header_value: String,
+}
+
+impl CloudfrontConfig {
+    fn secrets(&mut self, vault: &Vault, region: &str) -> Result<()> {
+        if self.secret_header_value == "IN_VAULT" {
+            let vkey = format!("{}/cloudfront/secret_header_value", region);
+            self.secret_header_value = vault.read(&vkey)?;
+        }
+        Ok(())
+    }
+    fn verify_secrets_exist(&self, vault: &Vault, region: &str) -> Result<()> {
+        let mut expected = vec![];
+        if self.secret_header_value == "IN_VAULT" {
+            expected.push("secret_header_value".to_string());
+        }
+        if expected.is_empty() {
+            return Ok(()); // no point trying to cross reference
+        }
+        let secpth = format!("{}/cloudfront", region);
+        let found = vault.list(&secpth)?;
+        debug!("Found cloudfront secrets {:?} for {}", found, region);
+        for v in expected {
+            if !found.contains(&v) {
+                bail!("Cloudfront secret {} not found in {} vault", v, region);
+            }
+        }
+        Ok(())
+    }
 }
 
 /// Sentry details for a region
@@ -298,7 +336,7 @@ impl Webhook {
                     whc.insert("SHIPCAT_AUDIT_REVISION".into(), revision);
                     whc.insert("SHIPCAT_AUDIT_CONTEXT_LINK".into(), url);
                 }
-                
+
                 // shipcat evars
                 if let Ok(url) = env::var("SHIPCAT_AUDIT_CONTEXT_LINK") {
                     whc.insert("SHIPCAT_AUDIT_CONTEXT_LINK".into(), url);
@@ -355,7 +393,7 @@ mod test_webhooks {
         env::set_var("SHIPCAT_AUDIT_CONTEXT_LINK", "burl2");
         env::set_var("SHIPCAT_AUDIT_REVISION", "gc2");
 
-        let cfg = wha.get_configuration().unwrap();    
+        let cfg = wha.get_configuration().unwrap();
 
         assert_eq!(cfg["SHIPCAT_AUDIT_CONTEXT_ID"], "cid1");
         assert_eq!(cfg["SHIPCAT_AUDIT_CONTEXT_LINK"], "burl2");
@@ -365,7 +403,7 @@ mod test_webhooks {
         env::remove_var("GIT_COMMIT");
         env::remove_var("SHIPCAT_AUDIT_REVISION");
 
-        let cfg = wha.get_configuration();    
+        let cfg = wha.get_configuration();
 
         assert!(cfg.is_err());
     }
@@ -400,6 +438,10 @@ pub struct Region {
     /// Kong configuration for the region
     #[serde(default)]
     pub kong: KongConfig,
+    /// Cloudfront configuration for the region
+    #[serde(default)]
+    pub cloudfront: Option<CloudfrontConfig>,
+
     /// Statuscake configuration for the region
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub statuscake: Option<StatuscakeConfig>,
@@ -431,6 +473,9 @@ impl Region {
     pub fn secrets(&mut self) -> Result<()> {
         let v = Vault::regional(&self.vault)?;
         self.kong.secrets(&v, &self.name)?;
+        if let Some(ref mut cf) = &mut self.cloudfront {
+            cf.secrets(&v, &self.name)?;
+        }
         if let Some(ref mut whs) = &mut self.webhooks {
             for wh in whs.iter_mut() {
                 wh.secrets(&v, &self.name)?;
@@ -444,6 +489,9 @@ impl Region {
         let v = Vault::regional(&self.vault)?;
         debug!("Validating kong secrets for {}", self.name);
         self.kong.verify_secrets_exist(&v, &self.name)?;
+        if let Some(cf) = &self.cloudfront {
+            cf.verify_secrets_exist(&v, &self.name)?;
+        }
         if let Some(whs) = &self.webhooks {
             for wh in whs.iter() {
                 wh.verify_secrets_exist(&v, &self.name)?;

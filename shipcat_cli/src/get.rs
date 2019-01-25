@@ -134,6 +134,7 @@ struct EnvironmentInfo {
     services_suffix: String,
     base_url: String,
     ip_whitelist: Vec<String>,
+    cloudfront_secret_value: Option<String>,
 }
 pub fn apistatus(conf: &Config, reg: &Region) -> Result<()> {
     let mut services = BTreeMap::new();
@@ -144,6 +145,7 @@ pub fn apistatus(conf: &Config, reg: &Region) -> Result<()> {
         services_suffix: reg.kong.base_url.clone(),
         base_url: reg.base_urls.get("services").unwrap_or(&"".to_owned()).to_string(),
         ip_whitelist: reg.ip_whitelist.clone(),
+        cloudfront_secret_value: reg.cloudfront.clone().map(|cf| cf.secret_header_value),
     };
 
     // Get API Info from Manifests
