@@ -32,9 +32,6 @@ impl Manifest {
             .join(format!("{}.yml", region.name));
         if envlocals.is_file() {
             debug!("Merging environment locals from {}", envlocals.display());
-            if !envlocals.exists() {
-                bail!("Defaults file {} does not exist", envlocals.display())
-            }
             let mut f = File::open(&envlocals)?;
             let mut data = String::new();
             f.read_to_string(&mut data)?;
