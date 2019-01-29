@@ -40,7 +40,7 @@ impl Manifest {
 
         let path = dir.join(format!("{}.yml", region.name));
         if path.is_file() {
-            debug!("Merging environment locals from {}", path.display());
+            debug!("Merging region locals from {}", path.display());
             let other = Manifest::read_from(&path)?;
             self.merge(other)?;
         }
