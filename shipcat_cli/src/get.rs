@@ -2,7 +2,10 @@
 use std::collections::BTreeMap;
 use semver::Version;
 
-use crate::structs::rds::Rds;
+use crate::structs::{
+    rds::Rds,
+    elasticache::ElastiCache,
+};
 use super::{Config, Team, Region};
 use super::{Result, Manifest};
 
@@ -88,7 +91,7 @@ pub struct ClusterInfo {
 /// Need explicit region: shipcat get -r preprodca-green clusterinfo
 pub fn clusterinfo(conf: &Config, ctx: &str, cluster: Option<&str>) -> Result<ClusterInfo> {
     assert!(conf.has_all_regions()); // can't work with reduced configs
-    let (clust, reg) = conf.resolve_cluster(ctx, cluster)?;
+    let (clust, reg) = conf.resolve_cluster(ctx, cluster.map(String::from))?;
     let ci = ClusterInfo {
         region: reg.name,
         namespace: reg.namespace,
@@ -204,6 +207,23 @@ pub fn databases(conf: &Config, region: &Region) -> Result<Vec<Rds>> {
     }
     println!("{}", serde_yaml::to_string(&dbs)?);
     Ok(dbs)
+}
+
+/// Find the ElastiCache instances to be provisioned for a region
+///
+/// Reduces all manifests in a region and produces a list for a terraform component
+/// to act on.
+pub fn caches(conf: &Config, region: &Region) -> Result<Vec<ElastiCache>> {
+    let mut caches = Vec::new();
+    for svc in Manifest::available(&region.name)? {
+        // NB: needs > raw version of manifests because we need image implicits..
+        let mf = Manifest::simple(&svc, &conf, &region)?;
+        if let Some(db) = mf.redis {
+            caches.push(db);
+        }
+    }
+    println!("{}", serde_yaml::to_string(&caches)?);
+    Ok(caches)
 }
 
 // ----------------------------------------------------------------------------
